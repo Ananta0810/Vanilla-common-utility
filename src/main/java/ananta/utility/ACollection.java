@@ -135,12 +135,9 @@ public final class ACollection {
      */
     @NotNull
     public static <E, KEY, VALUE> Map<KEY, VALUE> mapOf(@Nullable final Collection<E> collection, @Nullable final Function<E, KEY> keyProvider, @Nullable final Function<E, VALUE> valueProvider) {
-        if (keyProvider == null) {
-            throw new IllegalArgumentException("Key provider must not be null.");
-        }
-        if (valueProvider == null) {
-            throw new IllegalArgumentException("Value provider must not be null.");
-        }
+        AGuard.checkNull(keyProvider, "Key provider must not be null.");
+        AGuard.checkNull(valueProvider, "Value provider must not be null.");
+        
         if (isEmpty(collection)) {
             return emptyMap();
         }
@@ -172,12 +169,9 @@ public final class ACollection {
      */
     @NotNull
     public static <E, KEY, VALUE> Map<KEY, VALUE> mapNonNullOf(@Nullable final Collection<E> collection, @Nullable final Function<E, KEY> keyProvider, @Nullable final Function<E, VALUE> valueProvider) {
-        if (keyProvider == null) {
-            throw new IllegalArgumentException("Key provider must not be null.");
-        }
-        if (valueProvider == null) {
-            throw new IllegalArgumentException("Value provider must not be null.");
-        }
+        AGuard.checkNull(keyProvider, "Key provider must not be null.");
+        AGuard.checkNull(valueProvider, "Value provider must not be null.");
+        
         if (isEmpty(collection)) {
             return emptyMap();
         }
