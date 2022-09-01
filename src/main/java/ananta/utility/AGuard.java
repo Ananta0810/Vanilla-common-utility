@@ -1,5 +1,7 @@
 package ananta.utility;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * @author Ananta0810
  * This class provides some methods to check the input
@@ -14,4 +16,13 @@ public final class AGuard {
     
     private AGuard() {}
     
+    public static void checkNull(@Nullable final Object object, @Nullable final String message, @Nullable final Object... args) {
+        if (object == null) {
+            throw new IllegalArgumentException(AString.format(message, args));
+        }
+    }
+    
+    public static void checkNull(@Nullable final Object object) {
+        checkNull(object, "Value must be not null.");
+    }
 }
