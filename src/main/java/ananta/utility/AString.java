@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static ananta.utility.ACollection.listNonNullOf;
-import static ananta.utility.ACollection.listOf;
-
 /**
  * @author Ananta0810
  * This class provides some methods related to type String.
@@ -222,7 +219,7 @@ public final class AString {
         if (pattern == null) {
             return EMPTY;
         }
-        return MessageFormat.format(pattern, listNonNullOf(args));
+        return MessageFormat.format(pattern, AList.listNonNullOf(args));
     }
     
     /**
@@ -250,6 +247,6 @@ public final class AString {
      */
     @NotNull
     public static String join(@Nullable final String delimiter, @Nullable final Object... words) {
-        return join(delimiter, listOf(words));
+        return join(delimiter, AList.listOf(words));
     }
 }

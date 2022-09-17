@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ananta.utility.ACollection.*;
 
 /**
  * @author Ananta0810
@@ -27,7 +26,7 @@ public final class AReflection {
     
     private AReflection() {}
     
-    private static final Set<Class<?>> wrapperClasses = setOf(
+    private static final Set<Class<?>> wrapperClasses = ASet.setOf(
         Boolean.class, Byte.class, Character.class, Double.class, Float.class, Integer.class, Long.class, Short.class, Void.class
     );
     
@@ -101,7 +100,7 @@ public final class AReflection {
     @NotNull
     public static List<Field> fieldsOf(@Nullable final Class<?> clazz) {
         if (clazz == null) {
-            return emptyList();
+            return AList.emptyList();
         }
         List<Class<?>> classes = ancestorClassesOf(clazz);
         return classes.stream().map(Class::getDeclaredFields).flatMap(Stream::of).collect(Collectors.toList());
@@ -130,7 +129,7 @@ public final class AReflection {
     @NotNull
     public static List<String> fieldNamesOf(@Nullable final Class<?> clazz) {
         if (clazz == null) {
-            return emptyList();
+            return AList.emptyList();
         }
         return fieldsOf(clazz).stream().map(Field::getName).collect(Collectors.toList());
     }
@@ -143,7 +142,7 @@ public final class AReflection {
      */
     @NotNull
     public static Set<String> fieldNameSetOf(@Nullable final Class<?> clazz) {
-        return setOf(fieldNamesOf(clazz));
+        return ASet.setOf(fieldNamesOf(clazz));
     }
     
     /**
@@ -154,7 +153,7 @@ public final class AReflection {
     @NotNull
     public static List<Annotation> annotationsOf(@Nullable final Class<?> clazz) {
         if (clazz == null){
-            return emptyList();
+            return AList.emptyList();
         }
         List<Class<?>> classes = ancestorClassesOf(clazz);
         return classes.stream().map(Class::getAnnotations).flatMap(Stream::of).collect(Collectors.toList());
@@ -168,9 +167,9 @@ public final class AReflection {
     @NotNull
     public static List<Annotation> annotationsOf(@Nullable final Field field) {
         if (field == null) {
-            return emptyList();
+            return AList.emptyList();
         }
-        return listOf(field.getDeclaredAnnotations());
+        return AList.listOf(field.getDeclaredAnnotations());
     }
     
     /**
@@ -184,7 +183,7 @@ public final class AReflection {
         if (fieldName == null|| clazz == null) {
             return List.of();
         }
-        return findField(fieldName, clazz).map(field -> listOf(field.getAnnotations())).orElseGet(ACollection::emptyList);
+        return findField(fieldName, clazz).map(field -> AList.listOf(field.getAnnotations())).orElseGet(AList::emptyList);
     }
     
     /**
@@ -195,9 +194,9 @@ public final class AReflection {
     @NotNull
     public static List<Class<?>> ancestorClassesOf(@Nullable final Class<?> clazz) {
         if (clazz == null) {
-            return emptyList();
+            return AList.emptyList();
         }
-        List<Class<?>> classes = emptyList();
+        List<Class<?>> classes = AList.emptyList();
         Class<?> tempClass = clazz;
         while (tempClass != null) {
             classes.add(tempClass);
