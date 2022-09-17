@@ -82,24 +82,6 @@ public final class AList {
     }
     
     /**
-     * @return a modifiable list that contains input value with no duplicated.
-     */
-    @SafeVarargs
-    @NotNull
-    public static <T> List<T> uniqueListOf(@Nullable final T... elements) {
-        return uniqueListOf(listOf(elements));
-    }
-    
-    /**
-     * Get all unique items of other collections and put it into a list.
-     * @return a modifiable list that contains all items of other collection.
-     */
-    @NotNull
-    public static <T> List<T> uniqueListOf(@Nullable final Collection<T> list) {
-        return emptyListIfNull(list).stream().distinct().collect(Collectors.toList());
-    }
-    
-    /**
      *
      * @return a modifiable list that contains all non-null input value.
      */
@@ -120,29 +102,6 @@ public final class AList {
         return ACollection.isEmpty(collection)
             ? emptyList()
             : collection.stream().filter(Objects::nonNull).collect(Collectors.toList());
-    }
-    
-    /**
-     *
-     * @return a modifiable list that contains all non-null and unique input value.
-     */
-    @SafeVarargs
-    @NotNull
-    public static <T> List<T> uniqueNonNullListOf(@Nullable final T... elements) {
-        return uniqueNonNullListOf(listOf(elements));
-    }
-    
-    /**
-     * Get all non-null and unique items of other collections and put it into a list.
-     * @return a modifiable list that contains all non-null and unique items of other collection.
-     */
-    @NotNull
-    public static <T> List<T> uniqueNonNullListOf(@Nullable final Collection<T> collection) {
-        return emptyListIfNull(collection)
-            .stream()
-            .filter(Objects::nonNull)
-            .distinct()
-            .collect(Collectors.toList());
     }
     
     /**
@@ -246,7 +205,7 @@ public final class AList {
      * @return new merged list of 2 input list.
      */
     @NotNull
-    public static <T> List<T> concat(@Nullable final List<T> head, @Nullable final List<T> tail) {
+    public static <T> List<T> union(@Nullable final List<T> head, @Nullable final List<T> tail) {
         if (isEmpty(head)) {
             return listOf(tail);
         }
@@ -255,36 +214,11 @@ public final class AList {
         }
         List<T> result = listOf(head);
         result.addAll(tail);
-        return result;
+        return listOf(result);
     }
     
     /**
-     * Concatenate two list into a new list. The return list will contains only unique elements.
-     * <pre> Example:
-     * - left: [A, A, B, B, null]
-     * - right: [B, B, C, C, null]
-     * - return: [A, B, null, C]
-     * </pre>
-     * @param head the begin of the new list. Can be null.
-     * @param tail the end of the new list. Can be null.
-     * @return new unique merged list of 2 input list.
-     */
-    @NotNull
-    public static <T> List<T> uniqueConcat(@Nullable final List<T> head, @Nullable final List<T> tail) {
-        if (isEmpty(head)) {
-            return uniqueListOf(tail);
-        }
-        if (isEmpty(tail)) {
-            return uniqueListOf(head);
-        }
-        List<T> result = emptyListIfNull(head);
-        result.addAll(tail);
-        return uniqueListOf(result);
-    }
-    
-    /**
-     * Merge two list into a new list.
-     * This only merge those unique items (items which are not existed in the other one).
+     * Merge two list into a new list by adding elements which are not existed in the head into the head.
      * <pre> Example:
      * - left: [A, A, B, B, null]
      * - right: [B, B, C, C, null]
@@ -317,45 +251,20 @@ public final class AList {
      * <pre> Example:
      * - left: [A, A, B, B, null]
      * - right: [B, B, C, C, null]
-     * - return: [B, B, null, B, B, null]
+     * - return: [B, B, null]
      * </pre>
      * @param left first list, can be null.
      * @param right second list, can be null.
      */
     @NotNull
     public static <T> List<T> innerJoin(@Nullable final List<T> left, @Nullable final List<T> right) {
-        Set<T> leftSet = ASet.setOf(left);
         Set<T> rightSet = ASet.setOf(right);
         
-        Predicate<T> elementsInBothList = element -> leftSet.contains(element) && rightSet.contains(element);
+        Predicate<T> elementsThatAlsoInTheRight = rightSet::contains;
         
-        return concat(left, right)
+        return listOf(left)
             .stream()
-            .filter(elementsInBothList)
-            .collect(Collectors.toList());
-    }
-    
-    /**
-     * Get a list contains all unique elements existing in both list (including null).
-     * <pre> Example:
-     * - left: [A, A, B, B, null]
-     * - right: [B, B, C, C, null]
-     * - return: [B, null]
-     * </pre>
-     * @param left first list, can be null.
-     * @param right second list, can be null.
-     */
-    @NotNull
-    public static <T> List<T> uniqueInnerJoin(@Nullable final List<T> left, @Nullable final List<T> right) {
-        Set<T> leftSet = ASet.setOf(left);
-        Set<T> rightSet = ASet.setOf(right);
-        
-        Predicate<T> elementsInBothList = element -> leftSet.contains(element) && rightSet.contains(element);
-        
-        return concat(left, right)
-            .stream()
-            .filter(elementsInBothList)
-            .distinct()
+            .filter(elementsThatAlsoInTheRight)
             .collect(Collectors.toList());
     }
     
@@ -376,33 +285,9 @@ public final class AList {
         
         Predicate<T> elementsInLeftOnly = element -> leftSet.contains(element) && !rightSet.contains(element);
         
-        return concat(left, right)
+        return union(left, right)
             .stream()
             .filter(elementsInLeftOnly)
-            .collect(Collectors.toList());
-    }
-    
-    /**
-     * Get a list contains all unique elements existing in only the left list (including null).
-     * <pre> Example:
-     * - left: [A, A, B, B, null]
-     * - right: [B, B, C, C, null]
-     * - return: [A]
-     * </pre>
-     * @param left first list, can be null.
-     * @param right second list, can be null.
-     */
-    @NotNull
-    public static <T> List<T> uniqueLeftExcludeJoin(@Nullable final List<T> left, @Nullable final List<T> right) {
-        Set<T> leftSet = ASet.setOf(left);
-        Set<T> rightSet = ASet.setOf(right);
-        
-        Predicate<T> elementsInLeftOnly = element -> leftSet.contains(element) && !rightSet.contains(element);
-        
-        return concat(left, right)
-            .stream()
-            .filter(elementsInLeftOnly)
-            .distinct()
             .collect(Collectors.toList());
     }
     
@@ -423,38 +308,14 @@ public final class AList {
         
         Predicate<T> elementsInRightOnly = element -> !leftSet.contains(element) && rightSet.contains(element);
         
-        return concat(left, right)
+        return union(left, right)
             .stream()
             .filter(elementsInRightOnly)
             .collect(Collectors.toList());
     }
     
     /**
-     * Get a list contains all unique elements existing in only the right list (including null).
-     * <pre> Example:
-     * - left: [A, A, B, B, null]
-     * - right: [B, B, C, C, null]
-     * - return: [C]
-     * </pre>
-     * @param left first list, can be null.
-     * @param right second list, can be null.
-     */
-    @NotNull
-    public static <T> List<T> uniqueRightExcludeJoin(@Nullable final List<T> left, @Nullable final List<T> right) {
-        Set<T> leftSet = ASet.setOf(left);
-        Set<T> rightSet = ASet.setOf(right);
-        
-        Predicate<T> elementsInRightOnly = element -> !leftSet.contains(element) && rightSet.contains(element);
-        
-        return concat(left, right)
-            .stream()
-            .filter(elementsInRightOnly)
-            .distinct()
-            .collect(Collectors.toList());
-    }
-    
-    /**
-     * Get a list contains all unique elements existing in only the right list (including null).
+     * Get a list contains all elements which two list are not shared.
      * <pre> Example:
      * - left: [A, A, B, B, null]
      * - right: [B, B, C, C, null]
@@ -470,33 +331,10 @@ public final class AList {
         
         Predicate<T> inBothList = element -> listSet.contains(element) && otherSet.contains(element);
         
-        return concat(left, right)
+        return union(left, right)
             .stream()
             .filter(not(inBothList))
             .collect(Collectors.toList());
     }
     
-    /**
-     * Get a list contains all unique elements existing in only the right list (including null).
-     * <pre> Example:
-     * - left: [A, A, B, B, null]
-     * - right: [B, B, C, C, null]
-     * - return: [A, C]
-     * </pre>
-     * @param left first list, can be null.
-     * @param right second list, can be null.
-     */
-    @NotNull
-    public static <T> List<T> uniqueDifferent(@Nullable final List<T> left, @Nullable final List<T> right) {
-        Set<T> listSet = ASet.setOf(left);
-        Set<T> otherSet = ASet.setOf(right);
-        
-        Predicate<T> inBothList = element -> listSet.contains(element) && otherSet.contains(element);
-        
-        return concat(left, right)
-            .stream()
-            .filter(not(inBothList))
-            .distinct()
-            .collect(Collectors.toList());
-    }
 }
