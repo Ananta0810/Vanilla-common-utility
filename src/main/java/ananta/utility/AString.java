@@ -165,6 +165,11 @@ public final class AString {
     
     /**
      * Get a substring before the first occurrence of a specific word.
+     * <pre>Example:
+     *     parent: "hello world."
+     *     child: "o"
+     *     return: "hell"
+     * </pre>
      * This method will not check blank for the word.
      * @param word the substring which is right after the result.
      * @param parent can be null.
@@ -184,7 +189,37 @@ public final class AString {
     }
     
     /**
+     * Get a substring that does not include the substring after a specific word.
+     * <pre>Example:
+     *     parent: "hello world."
+     *     child: "o"
+     *     return: "hello"
+     * </pre>
+     * This method will not check blank for the word.
+     * @param word the substring which is right after the result.
+     * @param parent can be null.
+     * @return empty String if inputs are null or when word is not present in the parent string.
+     * Otherwise, return the substring that no contains substring after the word.
+     */
+    @NotNull
+    public static String beforeOfInclude(@Nullable final String word, @Nullable final String parent) {
+        if (word == null || parent == null) {
+            return EMPTY;
+        }
+        int index = parent.indexOf(word);
+        if (index < 0) {
+            return EMPTY;
+        }
+        return parent.substring(0, index + word.length());
+    }
+    
+    /**
      * Get a substring after the first occurrence of a specific word.
+     * <pre>Example:
+     *     parent: "hello world."
+     *     child: "o"
+     *     return: " word"
+     * </pre>
      * This method will not check blank for the word.
      * @param word the substring which is right before the result.
      * @param parent can be null.
@@ -204,6 +239,34 @@ public final class AString {
             return EMPTY;
         }
         return parent.substring(index + 1);
+    }
+    
+    /**
+     * Get a substring that does not include the substring before a specific word.
+     * <pre>Example:
+     *     parent: "hello world."
+     *     child: "o"
+     *     return: "o word"
+     * </pre>
+     * This method will not check blank for the word.
+     * @param word the substring which is right before the result.
+     * @param parent can be null.
+     * @return empty String if inputs are null or when word is not present in the parent string.
+     * Otherwise, return the substring that no contains substring before the word.
+     */
+    @NotNull
+    public static String afterOfInclude(@Nullable final String word, @Nullable final String parent) {
+        if (word == null || parent == null) {
+            return EMPTY;
+        }
+        if (word.isEmpty()) {
+            return parent;
+        }
+        int index = parent.indexOf(word);
+        if (index < 0) {
+            return EMPTY;
+        }
+        return parent.substring(index - word.length() + 1);
     }
     
     /**
