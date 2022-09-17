@@ -26,7 +26,7 @@ public final class AMap {
      * @param map can be null.
      * @return 0 if map is null. Otherwise, return its size.
      */
-    public static int sizeOf(@Nullable Map<?, ?> map) {
+    public static int sizeOf(@Nullable final Map<?, ?> map) {
         return map == null ? 0 : map.size();
     }
     
@@ -35,7 +35,7 @@ public final class AMap {
      * @param map can be null.
      * @return true if map is null or is empty. Otherwise, return false.
      */
-    public static boolean isEmpty(@Nullable Map<?, ?> map) {
+    public static boolean isEmpty(@Nullable final Map<?, ?> map) {
         return map == null || map.isEmpty();
     }
     
@@ -44,7 +44,7 @@ public final class AMap {
      * @param map can be null.
      * @return true if map has items. Otherwise, return false.
      */
-    public static boolean isNotEmpty(@Nullable Map<?, ?> map) {
+    public static boolean isNotEmpty(@Nullable final Map<?, ?> map) {
         return !isEmpty(map);
     }
     
@@ -77,7 +77,7 @@ public final class AMap {
      * @return a modifiable empty list.
      */
     @NotNull
-    public static <K, V> Map<K, V> emptyMapIfNull(@Nullable Map<K, V> map) {
+    public static <K, V> Map<K, V> emptyMapIfNull(@Nullable final Map<K, V> map) {
         if (map == null) {
             return emptyMap();
         }
@@ -128,7 +128,7 @@ public final class AMap {
      * @throws IllegalArgumentException if keyProvider or valueProvider is null.
      */
     @NotNull
-    public static <E, KEY, VALUE> Map<KEY, VALUE> mapNonNullOf(@Nullable final Collection<E> collection, @Nullable final Function<E, KEY> keyProvider, @Nullable final Function<E, VALUE> valueProvider) {
+    public static <E, KEY, VALUE> Map<KEY, VALUE> nonNullMapOf(@Nullable final Collection<E> collection, @Nullable final Function<E, KEY> keyProvider, @Nullable final Function<E, VALUE> valueProvider) {
         AGuard.checkNull(keyProvider, "Key provider must not be null.");
         AGuard.checkNull(valueProvider, "Value provider must not be null.");
         
@@ -159,7 +159,7 @@ public final class AMap {
      * @throws IllegalArgumentException if keyProvider is null.
      */
     @NotNull
-    public static <K, V> Map<K, V> mapNonNullOf(@Nullable final Collection<V> collection, @Nullable final Function<V, K> keyProvider) {
+    public static <K, V> Map<K, V> nonNullMapOf(@Nullable final Collection<V> collection, @Nullable final Function<V, K> keyProvider) {
         return mapOf(collection, keyProvider, item -> item);
     }
     

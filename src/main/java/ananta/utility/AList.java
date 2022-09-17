@@ -31,7 +31,7 @@ public final class AList {
      * @param list can be null.
      * @return 0 if list is null. Otherwise, return its size.
      */
-    public static int sizeOf(@Nullable List<?> list) {
+    public static int sizeOf(@Nullable final List<?> list) {
         return ACollection.sizeOf(list);
     }
     
@@ -40,7 +40,7 @@ public final class AList {
      * @param list can be null.
      * @return true if list is null or is empty. Otherwise, return false.
      */
-    public static boolean isEmpty(@Nullable List<?> list) {
+    public static boolean isEmpty(@Nullable final List<?> list) {
         return ACollection.isEmpty(list);
     }
     
@@ -49,7 +49,7 @@ public final class AList {
      * @param list can be null.
      * @return true if list has items. Otherwise, return false.
      */
-    public static boolean isNotEmpty(@Nullable List<?> list) {
+    public static boolean isNotEmpty(@Nullable final List<?> list) {
         return ACollection.isNotEmpty(list);
     }
     
@@ -95,7 +95,7 @@ public final class AList {
      * @return a modifiable list that contains all items of other collection.
      */
     @NotNull
-    public static <T> List<T> uniqueListOf(final @Nullable Collection<T> list) {
+    public static <T> List<T> uniqueListOf(@Nullable final Collection<T> list) {
         return emptyListIfNull(list).stream().distinct().collect(Collectors.toList());
     }
     
@@ -105,7 +105,7 @@ public final class AList {
      */
     @SafeVarargs
     @NotNull
-    public static <T> List<T> listNonNullOf(@Nullable final T... items) {
+    public static <T> List<T> nonNullListOf(@Nullable final T... items) {
         return Arrays.stream(items).filter(Objects::nonNull).collect(Collectors.toList());
     }
     
@@ -116,7 +116,7 @@ public final class AList {
      */
     @Contract("_ -> new")
     @NotNull
-    public static <T> List<T> listNonNullOf(@Nullable final Collection<T> collection) {
+    public static <T> List<T> nonNullListOf(@Nullable final Collection<T> collection) {
         return ACollection.isEmpty(collection)
             ? emptyList()
             : collection.stream().filter(Objects::nonNull).collect(Collectors.toList());
@@ -128,8 +128,8 @@ public final class AList {
      */
     @SafeVarargs
     @NotNull
-    public static <T> List<T> uniqueListNonNullOf(@Nullable final T... elements) {
-        return uniqueListNonNullOf(listOf(elements));
+    public static <T> List<T> uniqueNonNullListOf(@Nullable final T... elements) {
+        return uniqueNonNullListOf(listOf(elements));
     }
     
     /**
@@ -137,7 +137,7 @@ public final class AList {
      * @return a modifiable list that contains all non-null and unique items of other collection.
      */
     @NotNull
-    public static <T> List<T> uniqueListNonNullOf(final @Nullable Collection<T> collection) {
+    public static <T> List<T> uniqueNonNullListOf(@Nullable final Collection<T> collection) {
         return emptyListIfNull(collection)
             .stream()
             .filter(Objects::nonNull)
@@ -152,7 +152,7 @@ public final class AList {
      * Otherwise, return list that contains all items of collection
      */
     @NotNull
-    public static <T> List<T> emptyListIfNull(@Nullable Collection<T> collection) {
+    public static <T> List<T> emptyListIfNull(@Nullable final Collection<T> collection) {
         if (collection == null) {
             return emptyList();
         }
@@ -168,7 +168,7 @@ public final class AList {
      * @return empty if list is empty. Otherwise, return optional of first element.
      */
     @NotNull
-    public static <T> Optional<T> firstOf(@Nullable List<T> list) {
+    public static <T> Optional<T> firstOf(@Nullable final List<T> list) {
         if (isEmpty(list)) {
             return Optional.empty();
         }
@@ -181,7 +181,7 @@ public final class AList {
      * @return empty if list is empty. Otherwise, return optional of last element.
      */
     @NotNull
-    public static <T> Optional<T> lastOf(@Nullable List<T> list) {
+    public static <T> Optional<T> lastOf(@Nullable final List<T> list) {
         if (isEmpty(list)) {
             return Optional.empty();
         }
@@ -200,7 +200,7 @@ public final class AList {
      * Otherwise, return the moved list.
      */
     @NotNull
-    public static <T> List<T>  moveElementTo(final int index, @Nullable T element, @Nullable List<T> list) {
+    public static <T> List<T>  moveElementTo(final int index, @Nullable final T element, @Nullable final List<T> list) {
         if (isEmpty(list) || element == null || index < 0 || index >= sizeOf(list)) {
             return listOf(list);
         }
@@ -218,7 +218,7 @@ public final class AList {
      * Otherwise, return the list in which element is in the head.
      */
     @NotNull
-    public static <T> List<T>  moveElementToHead(@Nullable T element, @Nullable List<T> list) {
+    public static <T> List<T>  moveElementToHead(@Nullable final T  element, @Nullable final List<T> list) {
         return moveElementTo(0, element, list);
     }
     
@@ -230,7 +230,7 @@ public final class AList {
      * Otherwise, return the list in which element is in the tail.
      */
     @NotNull
-    public static <T> List<T>  moveElementToTail(@Nullable T element, @Nullable List<T> list) {
+    public static <T> List<T>  moveElementToTail(@Nullable final T element, @Nullable final List<T> list) {
         return moveElementTo(sizeOf(list) - 1, element, list);
     }
     
@@ -246,7 +246,7 @@ public final class AList {
      * @return new merged list of 2 input list.
      */
     @NotNull
-    public static <T> List<T> concat(@Nullable List<T> head, @Nullable List<T> tail) {
+    public static <T> List<T> concat(@Nullable final List<T> head, @Nullable final List<T> tail) {
         if (isEmpty(head)) {
             return listOf(tail);
         }
@@ -270,7 +270,7 @@ public final class AList {
      * @return new unique merged list of 2 input list.
      */
     @NotNull
-    public static <T> List<T> uniqueConcat(@Nullable List<T> head, @Nullable List<T> tail) {
+    public static <T> List<T> uniqueConcat(@Nullable final List<T> head, @Nullable final List<T> tail) {
         if (isEmpty(head)) {
             return uniqueListOf(tail);
         }
@@ -295,7 +295,7 @@ public final class AList {
      * @return new merged list of 2 input list.
      */
     @NotNull
-    public static <T> List<T> merge(@Nullable List<T> head, @Nullable List<T> tail) {
+    public static <T> List<T> merge(@Nullable final List<T> head, @Nullable final List<T> tail) {
         if (isEmpty(head)) {
             return listOf(tail);
         }
@@ -323,7 +323,7 @@ public final class AList {
      * @param right second list, can be null.
      */
     @NotNull
-    public static <T> List<T> innerJoin(@Nullable List<T> left, @Nullable List<T> right) {
+    public static <T> List<T> innerJoin(@Nullable final List<T> left, @Nullable final List<T> right) {
         Set<T> leftSet = ASet.setOf(left);
         Set<T> rightSet = ASet.setOf(right);
         
@@ -346,7 +346,7 @@ public final class AList {
      * @param right second list, can be null.
      */
     @NotNull
-    public static <T> List<T> uniqueInnerJoin(@Nullable List<T> left, @Nullable List<T> right) {
+    public static <T> List<T> uniqueInnerJoin(@Nullable final List<T> left, @Nullable final List<T> right) {
         Set<T> leftSet = ASet.setOf(left);
         Set<T> rightSet = ASet.setOf(right);
         
@@ -370,7 +370,7 @@ public final class AList {
      * @param right second list, can be null.
      */
     @NotNull
-    public static <T> List<T> leftExcludeJoin(@Nullable List<T> left, @Nullable List<T> right) {
+    public static <T> List<T> leftExcludeJoin(@Nullable final List<T> left, @Nullable final List<T> right) {
         Set<T> leftSet = ASet.setOf(left);
         Set<T> rightSet = ASet.setOf(right);
         
@@ -393,7 +393,7 @@ public final class AList {
      * @param right second list, can be null.
      */
     @NotNull
-    public static <T> List<T> uniqueLeftExcludeJoin(@Nullable List<T> left, @Nullable List<T> right) {
+    public static <T> List<T> uniqueLeftExcludeJoin(@Nullable final List<T> left, @Nullable final List<T> right) {
         Set<T> leftSet = ASet.setOf(left);
         Set<T> rightSet = ASet.setOf(right);
         
@@ -417,7 +417,7 @@ public final class AList {
      * @param right second list, can be null.
      */
     @NotNull
-    public static <T> List<T> rightExcludeJoin(@Nullable List<T> left, @Nullable List<T> right) {
+    public static <T> List<T> rightExcludeJoin(@Nullable final List<T> left, @Nullable final List<T> right) {
         Set<T> leftSet = ASet.setOf(left);
         Set<T> rightSet = ASet.setOf(right);
         
@@ -440,7 +440,7 @@ public final class AList {
      * @param right second list, can be null.
      */
     @NotNull
-    public static <T> List<T> uniqueRightExcludeJoin(@Nullable List<T> left, @Nullable List<T> right) {
+    public static <T> List<T> uniqueRightExcludeJoin(@Nullable final List<T> left, @Nullable final List<T> right) {
         Set<T> leftSet = ASet.setOf(left);
         Set<T> rightSet = ASet.setOf(right);
         
@@ -464,7 +464,7 @@ public final class AList {
      * @param right second list, can be null.
      */
     @NotNull
-    public static <T> List<T> different(@Nullable List<T> left, @Nullable List<T> right) {
+    public static <T> List<T> different(@Nullable final List<T> left, @Nullable final List<T> right) {
         Set<T> listSet = ASet.setOf(left);
         Set<T> otherSet = ASet.setOf(right);
         
@@ -487,7 +487,7 @@ public final class AList {
      * @param right second list, can be null.
      */
     @NotNull
-    public static <T> List<T> uniqueDifferent(@Nullable List<T> left, @Nullable List<T> right) {
+    public static <T> List<T> uniqueDifferent(@Nullable final List<T> left, @Nullable final List<T> right) {
         Set<T> listSet = ASet.setOf(left);
         Set<T> otherSet = ASet.setOf(right);
         

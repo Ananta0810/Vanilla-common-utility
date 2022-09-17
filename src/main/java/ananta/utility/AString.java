@@ -25,7 +25,7 @@ public final class AString {
      * @param value can be null.
      * @return true if input is null or is empty. Otherwise, return false.
      */
-    public static boolean isEmpty(@Nullable String value) {
+    public static boolean isEmpty(@Nullable final String value) {
         return value == null || value.isEmpty();
     }
     
@@ -34,7 +34,7 @@ public final class AString {
      * @param value can be null.
      * @return true if input contains any other character aside from empty space.
      */
-    public static boolean isNotEmpty(@Nullable String value) {
+    public static boolean isNotEmpty(@Nullable final String value) {
         return !isEmpty(value);
     }
     
@@ -43,7 +43,7 @@ public final class AString {
      * @param value can be null.
      * @return true if input is null or is blank. Otherwise, return false.
      */
-    public static boolean isBlank(@Nullable String value) {
+    public static boolean isBlank(@Nullable final String value) {
         return value == null || value.isBlank();
     }
     
@@ -52,7 +52,7 @@ public final class AString {
      * @param value can be null.
      * @return true if input contains any other character aside from blank space.
      */
-    public static boolean isNotBlank(@Nullable String value) {
+    public static boolean isNotBlank(@Nullable final String value) {
         return !isBlank(value);
     }
     
@@ -62,7 +62,7 @@ public final class AString {
      * @param value can be null.
      * @return false if input is empty or has any non-digit character (Include space).
      */
-    public static boolean hasDigitOnly(@Nullable String value) {
+    public static boolean hasDigitOnly(@Nullable final String value) {
         if (isBlank(value)) {
             return false;
         }
@@ -74,7 +74,7 @@ public final class AString {
      * @param value can be null.
      * @return false if input is empty or has any non-digit character (Exclude space).
      */
-    public static boolean hasDigitAndSpaceOnly(@Nullable String value) {
+    public static boolean hasDigitAndSpaceOnly(@Nullable final String value) {
         if (isBlank(value)) {
             return true;
         }
@@ -87,7 +87,7 @@ public final class AString {
      * @param value can be null.
      * @return false if input is empty or has any non-letter character (Include space).
      */
-    public static boolean hasLetterOnly(@Nullable String value) {
+    public static boolean hasLetterOnly(@Nullable final String value) {
         if (isBlank(value)) {
             return false;
         }
@@ -99,7 +99,7 @@ public final class AString {
      * @param value can be null.
      * @return false if input is empty or has any non-letter character (Exclude space).
      */
-    public static boolean hasLetterAndSpaceOnly(@Nullable String value) {
+    public static boolean hasLetterAndSpaceOnly(@Nullable final String value) {
         if (isBlank(value)) {
             return true;
         }
@@ -112,7 +112,7 @@ public final class AString {
      * @param value can be null.
      * @return false if input is empty or has any non-letter character (Include space).
      */
-    public static boolean hasLetterAndDigitOnly(@Nullable String value) {
+    public static boolean hasLetterAndDigitOnly(@Nullable final String value) {
         if (isBlank(value)) {
             return false;
         }
@@ -125,7 +125,7 @@ public final class AString {
      * @param value can be null.
      * @return false if input is empty or has any non-letter character (Include space).
      */
-    public static boolean hasLetterAndDigitAndSpaceOnly(@Nullable String value) {
+    public static boolean hasLetterAndDigitAndSpaceOnly(@Nullable final String value) {
         if (isBlank(value)) {
             return true;
         }
@@ -138,7 +138,7 @@ public final class AString {
      * @param value can be null.
      * @return false if input is empty or has any non-letter character (Include space).
      */
-    public static boolean hasUniqueCharacterOnly(@Nullable String value) {
+    public static boolean hasUniqueCharacterOnly(@Nullable final String value) {
         if (isBlank(value)) {
             return false;
         }
@@ -152,7 +152,7 @@ public final class AString {
      * @param value can be null.
      * @return false if input is empty or has any non-letter character (Include space).
      */
-    public static boolean hasUniqueCharacterAndSpaceOnly(@Nullable String value) {
+    public static boolean hasUniqueCharacterAndSpaceOnly(@Nullable final String value) {
         if (isBlank(value)) {
             return true;
         }
@@ -219,7 +219,7 @@ public final class AString {
         if (pattern == null) {
             return EMPTY;
         }
-        return MessageFormat.format(pattern, AList.listNonNullOf(args));
+        return MessageFormat.format(pattern, AList.nonNullListOf(args));
     }
     
     /**

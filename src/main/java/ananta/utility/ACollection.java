@@ -26,7 +26,7 @@ public final class ACollection {
      * @param collection can be null.
      * @return 0 if collection is null. Otherwise, return its size.
      */
-    public static int sizeOf(@Nullable Collection<?> collection) {
+    public static int sizeOf(@Nullable final Collection<?> collection) {
         return collection == null ? 0 : collection.size();
     }
     
@@ -35,7 +35,7 @@ public final class ACollection {
      * @param collection can be null.
      * @return true if collection is null or is empty. Otherwise, return false.
      */
-    public static boolean isEmpty(@Nullable Collection<?> collection) {
+    public static boolean isEmpty(@Nullable final Collection<?> collection) {
         return collection == null || collection.isEmpty();
     }
     
@@ -44,7 +44,7 @@ public final class ACollection {
      * @param collection can be null.
      * @return true if collection has items. Otherwise, return false.
      */
-    public static boolean isNotEmpty(@Nullable Collection<?> collection) {
+    public static boolean isNotEmpty(@Nullable final Collection<?> collection) {
         return !isEmpty(collection);
     }
     

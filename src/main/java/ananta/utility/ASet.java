@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
  * @author Ananta0810
  * This class provides some common methods related to set
  * such as creation, getting, checking,...
- * Most methods can handle NULL input well.
+ * Most methods can handle NULL input well and return empty set instead of NULL.
  */
 public final class ASet {
     
@@ -27,7 +28,7 @@ public final class ASet {
      * @param set can be null.
      * @return 0 if set is null. Otherwise, return its size.
      */
-    public static int sizeOf(@Nullable Set<?> set) {
+    public static int sizeOf(@Nullable final Set<?> set) {
         return ACollection.sizeOf(set);
     }
     
@@ -36,7 +37,7 @@ public final class ASet {
      * @param set can be null.
      * @return true if set is null or is empty. Otherwise, return false.
      */
-    public static boolean isEmpty(@Nullable Set<?> set) {
+    public static boolean isEmpty(@Nullable final Set<?> set) {
         return ACollection.isEmpty(set);
     }
     
@@ -45,7 +46,7 @@ public final class ASet {
      * @param set can be null.
      * @return true if set has items. Otherwise, return false.
      */
-    public static boolean isNotEmpty(@Nullable Set<?> set) {
+    public static boolean isNotEmpty(@Nullable final Set<?> set) {
         return ACollection.isNotEmpty(set);
     }
     
@@ -96,7 +97,7 @@ public final class ASet {
      */
     @SafeVarargs
     @NotNull
-    public static <T> Set<T> setNonNullOf(@Nullable final T... items) {
+    public static <T> Set<T> nonNullSetOf(@Nullable final T... items) {
         return Arrays.stream(items).filter(Objects::nonNull).collect(Collectors.toSet());
     }
     
@@ -105,10 +106,27 @@ public final class ASet {
      * @return a modifiable set that contains all non-null items of other collection.
      */
     @NotNull
-    public static <T> Set<T> setNonNullOf(@Nullable final Collection<T> collection) {
+    public static <T> Set<T> nonNullSetOf(@Nullable final Collection<T> collection) {
         return ACollection.isEmpty(collection)
             ? emptySet()
             : collection.stream().filter(Objects::nonNull).collect(Collectors.toSet());
+    }
+    
+    /**
+     * @param collection can be null.
+     * @return If collection is null then return empty list.
+     * If collection is a set, return itself.
+     * Otherwise, return set that contains all items of collection
+     */
+    @NotNull
+    public static <T> Set<T> emptySetIfNull(@Nullable final Collection<T> collection) {
+        if (collection == null) {
+            return emptySet();
+        }
+        if (collection instanceof Set<?>) {
+            return (Set<T>) collection;
+        }
+        return setOf(collection);
     }
     
     /**
@@ -134,8 +152,8 @@ public final class ASet {
      */
     @SafeVarargs
     @NotNull
-    public static <T> Set<T> linkedSetNonNullOf(@Nullable final T... items) {
-        return linkedSetOf(AList.listNonNullOf(items));
+    public static <T> Set<T> nonNullLinkedSetOf(@Nullable final T... items) {
+        return linkedSetOf(AList.nonNullListOf(items));
     }
     
     /**
@@ -143,8 +161,8 @@ public final class ASet {
      * @return a modifiable set that contains all items of other collection.
      */
     @NotNull
-    public static <T> Set<T> linkedSetNonNullOf(@Nullable final Collection<T> collection) {
-        return linkedSetOf(AList.listNonNullOf(collection));
+    public static <T> Set<T> nonNullLinkedSetOf(@Nullable final Collection<T> collection) {
+        return linkedSetOf(AList.nonNullListOf(collection));
     }
     
     /**
@@ -170,8 +188,8 @@ public final class ASet {
      */
     @SafeVarargs
     @NotNull
-    public static <T> Set<T> treeSetNonNullOf(@Nullable final T... items) {
-        return treeSetOf(AList.listNonNullOf(items));
+    public static <T> Set<T> nonNullTreeSetOf(@Nullable final T... items) {
+        return treeSetOf(AList.nonNullListOf(items));
     }
     
     /**
@@ -179,8 +197,8 @@ public final class ASet {
      * @return a modifiable tree set that contains all items of other collection.
      */
     @NotNull
-    public static <T> Set<T> treeSetNonNullOf(@Nullable final Collection<T> collection) {
-        return treeSetOf(AList.listNonNullOf(collection));
+    public static <T> Set<T> nonNullTreeSetOf(@Nullable final Collection<T> collection) {
+        return treeSetOf(AList.nonNullListOf(collection));
     }
     
 }
