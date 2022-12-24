@@ -1,6 +1,9 @@
 package ananta.utility;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 /**
  * @author Ananta0810
@@ -16,13 +19,29 @@ public final class AGuard {
     
     private AGuard() {}
     
-    public static void checkNull(@Nullable final Object object, @Nullable final String message, @Nullable final Object... args) {
+    public static Object checkNull(@Nullable final Object object, @Nullable final String message, @Nullable final Object... args) {
         if (object == null) {
             throw new IllegalArgumentException(AString.format(message, args));
         }
+        return object;
     }
-    
-    public static void checkNull(@Nullable final Object object) {
+
+    @Contract("null -> fail")
+    public static Object checkNull(@Nullable final Object object) {
         checkNull(object, "Value must be not null.");
+        return object;
     }
+
+    public static boolean isAnyNull(@Nullable final Object... objects) {
+        return AList.listOf(objects).stream().anyMatch(Objects::isNull);
+    }
+
+    public static boolean isAllNull(@Nullable final Object... objects) {
+        return AList.listOf(objects).stream().allMatch(Objects::isNull);
+    }
+
+    public static boolean isNoneNull(@Nullable final Object... objects) {
+        return AList.listOf(objects).stream().noneMatch(Objects::isNull);
+    }
+
 }

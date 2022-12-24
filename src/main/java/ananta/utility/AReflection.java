@@ -8,11 +8,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,7 +19,23 @@ import java.util.stream.Stream;
  * Most methods can handle NULL input well.
  */
 public final class AReflection {
-    
+
+    private final static Map<String, Class<?>> primitiveWrapperClassMap;
+
+    static {
+        primitiveWrapperClassMap = Map.ofEntries(
+            Map.entry("boolean", Boolean.class),
+            Map.entry("byte", Byte.class),
+            Map.entry("char", Character.class),
+            Map.entry("short", Short.class),
+            Map.entry("int", Integer.class),
+            Map.entry("long", Long.class),
+            Map.entry("double", Double.class),
+            Map.entry("float", Float.class),
+            Map.entry("void", Void.class)
+        );
+    }
+
     private AReflection() {}
     
     private static final Set<Class<?>> wrapperClasses = ASet.setOf(
@@ -55,7 +67,21 @@ public final class AReflection {
         
         return Optional.ofNullable(value);
     }
-    
+
+    /**
+     * Find field's value of a object.
+     * @param fieldName field name that you want to extract. Field name should not be be null.
+     * @param object object that contains the value. Object should not be be null.
+     * @return Optional.empty() if input is null or field can not be accessed. Otherwise, return Optional of object.
+     */
+    @NotNull
+    public static Optional<?> getFieldValue(@Nullable final String fieldName, @Nullable final Object object) {
+        if (fieldName == null || object == null){
+            return Optional.empty();
+        }
+        return findField(fieldName, object.getClass()).flatMap(field -> getFieldValue(field, object));
+    }
+
     /**
      * Set field value for object.
      * @param object can be null
@@ -131,7 +157,7 @@ public final class AReflection {
         if (clazz == null) {
             return AList.emptyList();
         }
-        return fieldsOf(clazz).stream().map(Field::getName).collect(Collectors.toList());
+        return nonStaticFieldsOf(clazz).stream().map(Field::getName).collect(Collectors.toList());
     }
     
     /**
@@ -324,6 +350,29 @@ public final class AReflection {
             return genericTypeOf(field.getGenericType(), 0);
         }
         return Optional.of(field.getType());
+    }
+
+    /**
+     * Find the wrapper class of a primitive type. If the input class is not primitive, return itself.
+     * @param clazz input class, can be primitive type or not and should not be null.
+     * @return input class itself if it is not primitive type. Otherwise, return wrapper class of primitive type.
+     * @throws IllegalArgumentException if input class is null or primitive type has the wrapper class which is not supported.
+     */
+    @NotNull
+    public static Class<?> wrapperClassOf(@Nullable Class<?> clazz) {
+        if (clazz == null) {
+            throw new IllegalArgumentException("Class should not be null.");
+        }
+        if (!clazz.isPrimitive()) {
+            return clazz;
+        }
+        String className = clazz.getSimpleName();
+
+        Class<?> wrapperClass = primitiveWrapperClassMap.get(className);
+        if (wrapperClass == null) {
+            throw new IllegalArgumentException(AString.format("Can not find the wrapper class of {}.", className));
+        }
+        return wrapperClass;
     }
     
     //=================================================// Checkers //=================================================//

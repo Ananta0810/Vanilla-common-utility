@@ -3,14 +3,8 @@ package ananta.utility;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -91,7 +85,19 @@ public final class ASet {
     public static <T> Set<T> setOf(@Nullable final Collection<T> collection) {
         return ACollection.isEmpty(collection) ? emptySet() : new HashSet<>(collection);
     }
-    
+
+    /**
+     * Get all items of other collections and put it into a set with the extracted key.
+     * @return a modifiable set that contains all items of other collection.
+     */
+    @NotNull
+    public static <T, R> Set<R> setOf(@Nullable final Collection<T> collection, Function<T, R> keyProvider) {
+        return setOf(collection)
+            .stream()
+            .map(item -> Optional.ofNullable(item).map(keyProvider).orElse(null))
+            .collect(Collectors.toSet());
+    }
+
     /**
      * @return a modifiable set that contains all non-null input value.
      */
@@ -111,24 +117,31 @@ public final class ASet {
             ? emptySet()
             : collection.stream().filter(Objects::nonNull).collect(Collectors.toSet());
     }
-    
+
     /**
-     * @param collection can be null.
-     * @return If collection is null then return empty list.
-     * If collection is a set, return itself.
-     * Otherwise, return set that contains all items of collection
+     * Get all non-null items of other collections and put it into a set with the extracted key.
+     * @return a modifiable set that contains all items of other collection.
      */
     @NotNull
-    public static <T> Set<T> emptySetIfNull(@Nullable final Collection<T> collection) {
-        if (collection == null) {
-            return emptySet();
-        }
-        if (collection instanceof Set<?>) {
-            return (Set<T>) collection;
-        }
-        return setOf(collection);
+    public static <T, R> Set<R> nonNullSetOf(@Nullable final Collection<T> collection, Function<T, R> keyProvider) {
+        return setOf(collection)
+            .stream()
+            .filter(Objects::nonNull)
+            .map(keyProvider)
+            .collect(Collectors.toSet());
     }
-    
+
+    /**
+     * @param set can be null.
+     * @return If set is null then return empty list.
+     * If set is a set, return itself.
+     * Otherwise, return set that contains all items of set
+     */
+    @NotNull
+    public static <T> Set<T> emptySetIfNull(@Nullable final Set<T> set) {
+        return set == null ? emptySet() : set;
+    }
+
     /**
      * @return a modifiable linked set that contains all input value.
      */
@@ -144,9 +157,23 @@ public final class ASet {
      */
     @NotNull
     public static <T> Set<T> linkedSetOf(@Nullable final Collection<T> collection) {
-        return ACollection.isEmpty(collection) ? emptyLinkedSet() : new LinkedHashSet<>(collection);
+        return ACollection.isEmpty(collection)
+            ? emptyLinkedSet()
+            : new LinkedHashSet<>(collection);
     }
-    
+
+    /**
+     * Get all items of other collections and put it into a linked set with the extracted key.
+     * @return a modifiable set that contains all items of other collection.
+     */
+    @NotNull
+    public static <T, R> Set<R> linkedSetOf(@Nullable final Collection<T> collection, Function<T, R> keyProvider) {
+        return setOf(collection)
+            .stream()
+            .map(item -> Optional.ofNullable(item).map(keyProvider).orElse(null))
+            .collect(Collectors.toSet());
+    }
+
     /**
      * @return a modifiable linked set that contains all input value.
      */
