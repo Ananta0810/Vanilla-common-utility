@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -80,7 +81,28 @@ public final class AList {
     public static <T> List<T> listOf(@Nullable final Collection<T> collection) {
         return ACollection.isEmpty(collection) ? emptyList() : new ArrayList<>(collection);
     }
-    
+
+    /**
+     * Get all items of other collections and put it into a list with the extracted key.
+     * @return a modifiable list that contains all items of other collection.
+     */
+    @NotNull
+    public static <T, R> List<R> listOf(@Nullable final Collection<T> collection, Function<T, R> keyProvider) {
+        if (ACollection.isEmpty(collection)) {
+            return emptyList();
+        }
+        if (collection instanceof List<?>) {
+            return collection
+                .stream()
+                .map(item -> Optional.ofNullable(item).map(keyProvider).orElse(null))
+                .collect(Collectors.toList());
+        }
+        return listOf(collection)
+            .stream()
+            .map(item -> Optional.ofNullable(item).map(keyProvider).orElse(null))
+            .collect(Collectors.toList());
+    }
+
     /**
      *
      * @return a modifiable list that contains all non-null input value.
@@ -120,7 +142,25 @@ public final class AList {
         }
         return listOf(collection);
     }
-    
+
+
+    /**
+     * Get element at a certain index.
+     * @param index index of the element that you want to get.
+     * @param list list that contains the element.
+     * @return empty if list is empty or no element at input index. Otherwise, return element.
+     */
+    public static <T> Optional<T> elementAt(int index, List<T> list) {
+        if (isEmpty(list)) {
+            return Optional.empty();
+        }
+        try {
+            return Optional.of(list.get(index));
+        } catch (IndexOutOfBoundsException e) {
+            return Optional.empty();
+        }
+    }
+
     /**
      * Get first element of a list.
      * @param list can be null.
@@ -128,10 +168,7 @@ public final class AList {
      */
     @NotNull
     public static <T> Optional<T> firstOf(@Nullable final List<T> list) {
-        if (isEmpty(list)) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(list.get(0));
+        return elementAt(0, list);
     }
     
     /**
@@ -144,9 +181,9 @@ public final class AList {
         if (isEmpty(list)) {
             return Optional.empty();
         }
-        return Optional.ofNullable(list.get(list.size() - 1));
+        return elementAt(list.size() - 1, list);
     }
-    
+
     /**
      * Move a element in a list to a certain index.
      * If new index is smaller than 0 or larger than the size of list,
@@ -205,7 +242,7 @@ public final class AList {
      * @return new merged list of 2 input list.
      */
     @NotNull
-    public static <T> List<T> union(@Nullable final List<T> head, @Nullable final List<T> tail) {
+    public static <T> List<T> concat(@Nullable final List<T> head, @Nullable final List<T> tail) {
         if (isEmpty(head)) {
             return listOf(tail);
         }
@@ -257,7 +294,7 @@ public final class AList {
      * @param right second list, can be null.
      */
     @NotNull
-    public static <T> List<T> innerJoin(@Nullable final List<T> left, @Nullable final List<T> right) {
+    public static <T> List<T> inBothList(@Nullable final List<T> left, @Nullable final List<T> right) {
         Set<T> rightSet = ASet.setOf(right);
         
         Predicate<T> elementsThatAlsoInTheRight = rightSet::contains;
@@ -279,13 +316,13 @@ public final class AList {
      * @param right second list, can be null.
      */
     @NotNull
-    public static <T> List<T> leftExcludeJoin(@Nullable final List<T> left, @Nullable final List<T> right) {
+    public static <T> List<T> inLeftListOnly(@Nullable final List<T> left, @Nullable final List<T> right) {
         Set<T> leftSet = ASet.setOf(left);
         Set<T> rightSet = ASet.setOf(right);
         
         Predicate<T> elementsInLeftOnly = element -> leftSet.contains(element) && !rightSet.contains(element);
         
-        return union(left, right)
+        return concat(left, right)
             .stream()
             .filter(elementsInLeftOnly)
             .collect(Collectors.toList());
@@ -302,13 +339,13 @@ public final class AList {
      * @param right second list, can be null.
      */
     @NotNull
-    public static <T> List<T> rightExcludeJoin(@Nullable final List<T> left, @Nullable final List<T> right) {
+    public static <T> List<T> inRightListOnly(@Nullable final List<T> left, @Nullable final List<T> right) {
         Set<T> leftSet = ASet.setOf(left);
         Set<T> rightSet = ASet.setOf(right);
         
         Predicate<T> elementsInRightOnly = element -> !leftSet.contains(element) && rightSet.contains(element);
         
-        return union(left, right)
+        return concat(left, right)
             .stream()
             .filter(elementsInRightOnly)
             .collect(Collectors.toList());
@@ -331,7 +368,7 @@ public final class AList {
         
         Predicate<T> inBothList = element -> listSet.contains(element) && otherSet.contains(element);
         
-        return union(left, right)
+        return concat(left, right)
             .stream()
             .filter(not(inBothList))
             .collect(Collectors.toList());
