@@ -1,15 +1,9 @@
 package ananta.utility;
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import static java.util.function.Predicate.not;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * @author Ananta0810
@@ -47,5 +41,12 @@ public final class ACollection {
     public static boolean isNotEmpty(@Nullable final Collection<?> collection) {
         return !isEmpty(collection);
     }
-    
+
+    public static <T> boolean hasAnyOf(@Nullable final Collection<T> collection, @Nullable final Collection<T> parentCollection) {
+        if (isEmpty(parentCollection) || isEmpty(collection)) {
+            return false;
+        }
+        Set<T> set = ASet.setOf(collection);
+        return parentCollection.stream().anyMatch(set::contains);
+    }
 }
