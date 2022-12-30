@@ -230,7 +230,33 @@ public final class AReflection {
         }
         return classes;
     }
-    
+
+    /**
+     * Find static classes that extended from certain class, inside some wrapper classes.
+     * @param wrapperClasses classes that contains static classes.
+     * @param parentClass class that those static classes extended from.
+     * @return list of extended classes found in wrapper classes.
+     */
+    @NotNull
+    public static <T, R> List<Class<R>> findStaticClassesInside(
+        final @Nullable Collection<Class<T>> wrapperClasses,
+        final @Nullable Class<R> parentClass
+    ) {
+        if (wrapperClasses == null || parentClass == null) {
+            return AList.emptyList();
+        }
+
+        return wrapperClasses
+            .stream()
+            .map(Class::getDeclaredClasses)
+            .flatMap(Arrays::stream)
+            .filter(clazz -> AReflection.isChildClassOf(parentClass, clazz))
+            .map(entity -> AReflection.castToClass(parentClass, entity))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toList());
+    }
+
     //=================================================// Finders //=================================================//
     /**
      * Find certain annotation of a class.
@@ -353,6 +379,42 @@ public final class AReflection {
     }
 
     /**
+     * Cast a object to other type.
+     * @param clazz class that we want to cast to. must be not null.
+     * @param object object that we want to cast. should be not null.
+     * @return empty if input is null or cast failed. Otherwise, return casted value.
+     */
+    @NotNull
+    public static <T> Optional<T> castTo(@Nullable final Class<T> clazz, @Nullable final Object object) {
+        try {
+            if (clazz == null || object == null) {
+                return Optional.empty();
+            }
+            return Optional.of(clazz.cast(object));
+        } catch (ClassCastException e) {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Cast a object to other type.
+     * @param clazz class that we want to cast to. must be not null.
+     * @param object object that we want to cast. should be not null.
+     * @return empty if input is null or cast failed. Otherwise, return casted value.
+     */
+    @NotNull
+    public static <T> Optional<Class<T>> castToClass(@Nullable final Class<T> clazz, @Nullable final Class<?> object) {
+        try {
+            if (clazz == null || object == null) {
+                return Optional.empty();
+            }
+            return Optional.of(clazz.getClass().cast(object));
+        } catch (ClassCastException e) {
+            return Optional.empty();
+        }
+    }
+
+    /**
      * Find the wrapper class of a primitive type. If the input class is not primitive, return itself.
      * @param clazz input class, can be primitive type or not and should not be null.
      * @return input class itself if it is not primitive type. Otherwise, return wrapper class of primitive type.
@@ -441,7 +503,7 @@ public final class AReflection {
             return false;
         }
         List<Class<?>> classes = ancestorClassesOf(clazz);
-        return classes.stream().anyMatch(c -> c.isAssignableFrom(parentClass));
+        return classes.stream().anyMatch(parentClass::equals);
     }
     
     /**
