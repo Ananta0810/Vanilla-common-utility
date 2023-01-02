@@ -5,7 +5,9 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.helpers.MessageFormatter;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -18,8 +20,11 @@ import java.util.stream.Collectors;
  */
 public final class AString {
 
-    private final static String EMPTY = "";
+    public final static String EMPTY = "";
     private static final StringBuilder STRING_BUILDER = new StringBuilder();
+    public static final String SECURITY_CHAR = "*";
+    public static final int SECURITY_MIN_LENGTH = 8;
+    public static final int SECURITY_HINT_LENGTH = 3;
 
     private AString() {}
     
@@ -60,8 +65,20 @@ public final class AString {
     }
 
     @NotNull
-    public static String emptyIfNull(@Nullable String string) {
+    public static String emptyIfNull(@Nullable final String string) {
         return string == null ? EMPTY : string;
+    }
+
+    /**
+     * Get length of a string.
+     * @param input String that you want to get length, can be null.
+     * @return 0 if input is null, Otherwise, return length of input.
+     */
+    public static int lengthOf(@Nullable final String input) {
+        if (input == null) {
+            return 0;
+        }
+        return input.length();
     }
 
     /**
@@ -189,7 +206,7 @@ public final class AString {
         if (word == null || parent == null) {
             return EMPTY;
         }
-        int index = parent.indexOf(word);
+        final int index = parent.indexOf(word);
         if (index < 0) {
             return EMPTY;
         }
@@ -214,7 +231,7 @@ public final class AString {
         if (word == null || parent == null) {
             return EMPTY;
         }
-        int index = parent.indexOf(word);
+        final int index = parent.indexOf(word);
         if (index < 0) {
             return EMPTY;
         }
@@ -239,7 +256,7 @@ public final class AString {
         if (word == null || parent == null) {
             return EMPTY;
         }
-        int index = parent.lastIndexOf(word);
+        final int index = parent.lastIndexOf(word);
         if (index < 0) {
             return EMPTY;
         }
@@ -264,7 +281,7 @@ public final class AString {
         if (word == null || parent == null) {
             return EMPTY;
         }
-        int index = parent.lastIndexOf(word);
+        final int index = parent.lastIndexOf(word);
         if (index < 0) {
             return EMPTY;
         }
@@ -292,7 +309,7 @@ public final class AString {
         if (word.isEmpty()) {
             return parent;
         }
-        int index = parent.indexOf(word);
+        final int index = parent.indexOf(word);
         if (index < 0) {
             return EMPTY;
         }
@@ -320,7 +337,7 @@ public final class AString {
         if (word.isEmpty()) {
             return parent;
         }
-        int index = parent.indexOf(word);
+        final int index = parent.indexOf(word);
         if (index < 0) {
             return EMPTY;
         }
@@ -348,7 +365,7 @@ public final class AString {
         if (word.isEmpty()) {
             return parent;
         }
-        int index = parent.lastIndexOf(word);
+        final int index = parent.lastIndexOf(word);
         if (index < 0) {
             return EMPTY;
         }
@@ -376,7 +393,7 @@ public final class AString {
         if (word.isEmpty()) {
             return parent;
         }
-        int index = parent.lastIndexOf(word);
+        final int index = parent.lastIndexOf(word);
         if (index < 0) {
             return EMPTY;
         }
@@ -410,11 +427,11 @@ public final class AString {
         if (isEmpty(end)) {
             return afterOf(start, parent);
         }
-        int startIndex = parent.indexOf(start);
+        final int startIndex = parent.indexOf(start);
         if (startIndex < 0) {
             return EMPTY;
         }
-        int endIndex = parent.indexOf(end);
+        final int endIndex = parent.indexOf(end);
         if (endIndex < 0) {
             return EMPTY;
         }
@@ -438,11 +455,11 @@ public final class AString {
         if (isEmpty(end)) {
             return afterOf(start, parent);
         }
-        int startIndex = parent.lastIndexOf(start);
+        final int startIndex = parent.lastIndexOf(start);
         if (startIndex < 0) {
             return EMPTY;
         }
-        int endIndex = parent.lastIndexOf(end);
+        final int endIndex = parent.lastIndexOf(end);
         if (endIndex < 0) {
             return EMPTY;
         }
@@ -466,11 +483,11 @@ public final class AString {
         if (isEmpty(end)) {
             return afterOf(start, parent);
         }
-        int startIndex = parent.indexOf(start);
+        final int startIndex = parent.indexOf(start);
         if (startIndex < 0) {
             return EMPTY;
         }
-        int endIndex = parent.lastIndexOf(end);
+        final int endIndex = parent.lastIndexOf(end);
         if (endIndex < 0) {
             return EMPTY;
         }
@@ -490,22 +507,22 @@ public final class AString {
      * @return empty if messagePattern is null. Otherwise, return a string which contains the arguments.
      */
     @NotNull
-    public static String format(String messagePattern, Object... args)
+    public static String format(final String messagePattern, final Object... args)
     {
         if (Pattern.matches(".*\\{\\d+,.+,.+}.*", messagePattern))
         {
             return MessageFormat.format(messagePattern, args);
         }
-        String r = "\\{\\d}";
+        final String r = "\\{\\d}";
 
         if(!messagePattern.matches(".*" + r + ".*"))
         {
             return MessageFormatter.arrayFormat(messagePattern, args).getMessage();
         }
 
-        Pattern pattern = Pattern.compile(r);
-        Matcher matcher = pattern.matcher(messagePattern);
-        StringBuilder stringBuilder = new StringBuilder();
+        final Pattern pattern = Pattern.compile(r);
+        final Matcher matcher = pattern.matcher(messagePattern);
+        final StringBuilder stringBuilder = new StringBuilder();
         int parsingValue = 0;
 
         while(matcher.find())
@@ -524,7 +541,7 @@ public final class AString {
             return EMPTY;
         }
         AList.listOf(words).forEach(STRING_BUILDER::append);
-        String result = STRING_BUILDER.toString();
+        final String result = STRING_BUILDER.toString();
         STRING_BUILDER.setLength(0);
         return result;
     }
@@ -535,7 +552,7 @@ public final class AString {
             return EMPTY;
         }
         AList.nonNullListOf(words).forEach(STRING_BUILDER::append);
-        String result = STRING_BUILDER.toString();
+        final String result = STRING_BUILDER.toString();
         STRING_BUILDER.setLength(0);
         return result;
     }
@@ -580,9 +597,52 @@ public final class AString {
     public static String join(@Nullable final String delimiter, @Nullable final Object... words) {
         return join(delimiter, AList.listOf(words).stream().map(String::valueOf).collect(Collectors.toList()));
     }
-    
-    public static String secondsOf(final long milliseconds) {
-        final double MILLISECONDS_PER_SECOND = 1000.0;
-        return String.format("%.2f", (float) milliseconds / MILLISECONDS_PER_SECOND);
+
+    /**
+     * Hide your input with {@value #SECURITY_CHAR} to reduce security risk.
+     * @param input String that you want to hide from others.
+     * @param minLength total minimum of {@value #SECURITY_CHAR} that you want to appear in your output.
+     *                  NOTE: This value must be larger or equals to zero.
+     *                  If your input has total length smaller than this length, then your output
+     *                  will have this minLength {@value #SECURITY_CHAR} character.<br/>
+     *                  Example: <br/>
+     *                  - Your input is null, minLength is 8 then output will be "********" <br/>
+     *                  - Your input is "123456", minLength is 8 then output will be "********"<br/>
+     *                  - Your input is "1234567890", minLength is 8, hintLength is 1 then output will be "1*********"
+     * @param hintLength total characters that you want to show to others as a hint.<br/>
+     *                   Example: <br/>
+     *                   - Your input is "123456", hintLength is 3 then output will be "123*****"
+     * @return the text that has part of it hidden.
+     * @throws IllegalArgumentException if minLength or hintLength smaller than zero.
+     */
+    @NotNull
+    public static String hiddenTextOf(@Nullable final String input, final int minLength, final int hintLength) {
+        if (input == null) {
+            return SECURITY_CHAR.repeat(minLength);
+        }
+        if (minLength < 0) {
+            throw new IllegalArgumentException("Min Length must be larger or equals to zero.");
+        }
+        if (hintLength < 0) {
+            throw new IllegalArgumentException("Hint Length must be larger or equals to zero.");
+        }
+        final int length = input.length();
+        if (length <= minLength) {
+            return SECURITY_CHAR.repeat(minLength);
+        }
+        final String end = input.substring(hintLength);
+        return input.replace(end, SECURITY_CHAR.repeat(end.length()));
+    }
+
+    /**
+     * Hide your input with {@value #SECURITY_CHAR} to reduce security risk. <br/>
+     * The output will have {@value #SECURITY_MIN_LENGTH} as minimum length
+     * and will show {@value #SECURITY_HINT_LENGTH} characters at start as a hint.
+     * @param input String that you want to hide from others.
+     * @return the text that has part of it hidden.
+     */
+    @NotNull
+    public static String hiddenTextOf(@Nullable final String input) {
+        return hiddenTextOf(input, SECURITY_MIN_LENGTH, SECURITY_HINT_LENGTH);
     }
 }
