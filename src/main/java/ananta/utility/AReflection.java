@@ -18,6 +18,7 @@ import java.util.stream.Stream;
  * This class provides some methods related to reflection.
  * Most methods can handle NULL input well.
  */
+@SuppressWarnings("unused")
 public final class AReflection {
 
     private final static Map<String, Class<?>> primitiveWrapperClassMap;
@@ -60,7 +61,7 @@ public final class AReflection {
         Object value = null;
         try {
             value = field.get(object);
-        } catch (IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             e.printStackTrace();
         }
         field.setAccessible(canAccess);
@@ -92,23 +93,23 @@ public final class AReflection {
      * - Object or field name is null<br/>
      * - Field not found.
      */
-    public static boolean setFieldValue(@Nullable final Object object, String fieldName, @Nullable final Object fieldValue) {
+    public static boolean setFieldValue(@Nullable final Object object, final String fieldName, @Nullable final Object fieldValue) {
         if (object == null || fieldName == null) {
             return false;
         }
         
-        Optional<Field> fieldOpt = findField(fieldName, object.getClass());
-        boolean fieldNotFound = fieldOpt.isEmpty();
+        final Optional<Field> fieldOpt = findField(fieldName, object.getClass());
+        final boolean fieldNotFound = fieldOpt.isEmpty();
         
         if (fieldNotFound){
             return false;
         }
-        Field field = fieldOpt.get();
-        boolean canAccess = field.canAccess(object);
+        final Field field = fieldOpt.get();
+        final boolean canAccess = field.canAccess(object);
         field.setAccessible(true);
         try {
             field.set(object, fieldValue);
-        } catch (IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             field.setAccessible(canAccess);
             return false;
         }
@@ -128,7 +129,7 @@ public final class AReflection {
         if (clazz == null) {
             return AList.emptyList();
         }
-        List<Class<?>> classes = ancestorClassesOf(clazz);
+        final List<Class<?>> classes = ancestorClassesOf(clazz);
         return classes.stream().map(Class::getDeclaredFields).flatMap(Stream::of).collect(Collectors.toList());
     }
     
@@ -181,7 +182,7 @@ public final class AReflection {
         if (clazz == null){
             return AList.emptyList();
         }
-        List<Class<?>> classes = ancestorClassesOf(clazz);
+        final List<Class<?>> classes = ancestorClassesOf(clazz);
         return classes.stream().map(Class::getAnnotations).flatMap(Stream::of).collect(Collectors.toList());
     }
     
@@ -222,12 +223,14 @@ public final class AReflection {
         if (clazz == null) {
             return AList.emptyList();
         }
-        List<Class<?>> classes = AList.emptyList();
+        final List<Class<?>> classes = AList.emptyList();
         Class<?> tempClass = clazz;
         while (tempClass != null) {
             classes.add(tempClass);
+            classes.addAll(AList.listOf(tempClass.getInterfaces()));
             tempClass = tempClass.getSuperclass();
         }
+
         return classes;
     }
 
@@ -252,8 +255,7 @@ public final class AReflection {
             .flatMap(Arrays::stream)
             .filter(clazz -> AReflection.isChildClassOf(parentClass, clazz))
             .map(entity -> AReflection.castToClass(parentClass, entity))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
+            .flatMap(Optional::stream)
             .collect(Collectors.toList());
     }
 
@@ -319,10 +321,9 @@ public final class AReflection {
             return Optional.empty();
         }
         try {
-            Type genericType = ((ParameterizedType) type).getActualTypeArguments()[index];
+            final Type genericType = ((ParameterizedType) type).getActualTypeArguments()[index];
             return Optional.of((Class<?>) genericType);
-        } catch (ClassCastException e) {
-            e.printStackTrace();
+        } catch (final ClassCastException e) {
             return Optional.empty();
         }
     }
@@ -391,7 +392,7 @@ public final class AReflection {
                 return Optional.empty();
             }
             return Optional.of(clazz.cast(object));
-        } catch (ClassCastException e) {
+        } catch (final ClassCastException e) {
             return Optional.empty();
         }
     }
@@ -403,13 +404,14 @@ public final class AReflection {
      * @return empty if input is null or cast failed. Otherwise, return casted value.
      */
     @NotNull
+    @SuppressWarnings("unchecked")
     public static <T> Optional<Class<T>> castToClass(@Nullable final Class<T> clazz, @Nullable final Class<?> object) {
         try {
             if (clazz == null || object == null) {
                 return Optional.empty();
             }
             return Optional.of(clazz.getClass().cast(object));
-        } catch (ClassCastException e) {
+        } catch (final ClassCastException e) {
             return Optional.empty();
         }
     }
@@ -421,16 +423,16 @@ public final class AReflection {
      * @throws IllegalArgumentException if input class is null or primitive type has the wrapper class which is not supported.
      */
     @NotNull
-    public static Class<?> wrapperClassOf(@Nullable Class<?> clazz) {
+    public static Class<?> wrapperClassOf(@Nullable final Class<?> clazz) {
         if (clazz == null) {
             throw new IllegalArgumentException("Class should not be null.");
         }
         if (!clazz.isPrimitive()) {
             return clazz;
         }
-        String className = clazz.getSimpleName();
+        final String className = clazz.getSimpleName();
 
-        Class<?> wrapperClass = primitiveWrapperClassMap.get(className);
+        final Class<?> wrapperClass = primitiveWrapperClassMap.get(className);
         if (wrapperClass == null) {
             throw new IllegalArgumentException(AString.format("Can not find the wrapper class of {}.", className));
         }
@@ -448,7 +450,7 @@ public final class AReflection {
         if (annotationClass == null || clazz == null) {
             return false;
         }
-        List<Annotation> annotations = annotationsOf(clazz);
+        final List<Annotation> annotations = annotationsOf(clazz);
         return annotations.stream().anyMatch(annotation -> annotation.annotationType().equals(annotationClass));
     }
     
@@ -502,10 +504,22 @@ public final class AReflection {
         if (parentClass == null || clazz == null) {
             return false;
         }
-        List<Class<?>> classes = ancestorClassesOf(clazz);
+        final List<Class<?>> classes = ancestorClassesOf(clazz);
         return classes.stream().anyMatch(parentClass::equals);
     }
-    
+
+    /**
+     * Check if a class is abstract class or is interface.
+     * @param clazz can be null.
+     * @return true if the is abstract class or is interface. Otherwise, return false.
+     */
+    public static boolean isAbstractClassOrInterface(@Nullable final Class<?> clazz) {
+        if (clazz == null) {
+            return false;
+        }
+        return clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers());
+    }
+
     /**
      * Check whether a field is primitive type or wrapper or not.
      * @param field can be null.
@@ -515,7 +529,7 @@ public final class AReflection {
         if (field == null) {
             return false;
         }
-        Class<?> type = field.getType();
+        final Class<?> type = field.getType();
         return type.isPrimitive() || wrapperClasses.contains(type);
     }
     
