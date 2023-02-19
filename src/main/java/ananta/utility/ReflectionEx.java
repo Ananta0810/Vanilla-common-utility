@@ -9,6 +9,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.function.Predicate.not;
+
 
 /**
  * @author Ananta0810
@@ -18,10 +20,12 @@ import java.util.stream.Stream;
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public final class ReflectionEx {
 
-    private final static Map<String, Class<?>> primitiveWrapperClassMap;
+    private static final Map<String, Class<?>> PRIMITIVE_WRAPPER_CLASS_MAP;
+
+    private static final Set<Class<?>> WRAPPER_CLASSES;
 
     static {
-        primitiveWrapperClassMap = Map.ofEntries(
+        PRIMITIVE_WRAPPER_CLASS_MAP = Map.ofEntries(
             Map.entry("boolean", Boolean.class),
             Map.entry("byte", Byte.class),
             Map.entry("char", Character.class),
@@ -32,14 +36,13 @@ public final class ReflectionEx {
             Map.entry("float", Float.class),
             Map.entry("void", Void.class)
         );
+
+        WRAPPER_CLASSES = SetEx.setOf(PRIMITIVE_WRAPPER_CLASS_MAP.values());
     }
 
     private ReflectionEx() {
     }
 
-    private static final Set<Class<?>> wrapperClasses = SetEx.setOf(
-        Boolean.class, Byte.class, Character.class, Double.class, Float.class, Integer.class, Long.class, Short.class, Void.class
-    );
 
     /**
      * Find field's value of an object.
@@ -49,7 +52,7 @@ public final class ReflectionEx {
      * @return Optional.empty() if input is null or field can not be accessed. Otherwise, return Optional of object.
      */
     @NotNull
-    public static Optional<?> getFieldValue(@Nullable final Object object, @Nullable final Field field) {
+    public static Optional<?> findFieldValue(@Nullable final Object object, @Nullable final Field field) {
         if (field == null || object == null) {
             return Optional.empty();
         }
@@ -88,48 +91,121 @@ public final class ReflectionEx {
      *                   Field name should not be null.
      * @return Optional.empty() if input is null or field can not be accessed. Otherwise, return Optional of object.
      */
-    public static Optional<Object> getFieldValue(@Nullable final Object object, @Nullable final String fieldNames) {
+    public static Optional<Object> findFieldValue(@Nullable final Object object, @Nullable final String fieldNames) {
         if (object == null || fieldNames == null) {
             return Optional.empty();
         }
         final String[] fieldNameList = fieldNames.split("\\.");
         Object result = object;
         for (final String field : fieldNameList) {
-            result = getFieldValue0(field, result).orElse(null);
+            result = findFieldValue0(result, field).orElse(null);
         }
         return Optional.ofNullable(result);
     }
 
     @NotNull
-    private static Optional<?> getFieldValue0(@Nullable final String fieldName, @Nullable final Object object) {
+    private static Optional<?> findFieldValue0(@Nullable final Object object, @Nullable final String fieldName) {
         if (fieldName == null || object == null) {
             return Optional.empty();
         }
-        return findField(fieldName, object.getClass()).flatMap(field -> getFieldValue(object, field));
+        return findField(fieldName, object.getClass()).flatMap(field -> findFieldValue(object, field));
     }
 
     /**
      * Set field value for object.
-     * @param object can be null
-     * @param fieldName can be null
-     * @param fieldValue can be null
+     *
+     * @param object     Object that you want to set value. can be null.
+     * @param fieldName  Name of field to set value. can be null.
+     * @param fieldValue Value to set. can be null.
      * @return true if set value successfully. Otherwise, return false.
      * If return false, it might be due to some follow reasons:<br/>
      * - Object or field name is null<br/>
      * - Field not found.
      */
-    public static boolean setFieldValue(@Nullable final Object object, final String fieldName, @Nullable final Object fieldValue) {
+    public static boolean setFieldValue(@Nullable final Object object, @Nullable final String fieldName, @Nullable final Object fieldValue) {
         if (object == null || fieldName == null) {
             return false;
         }
-        
+
         final Optional<Field> fieldOpt = findField(fieldName, object.getClass());
         final boolean fieldNotFound = fieldOpt.isEmpty();
-        
-        if (fieldNotFound){
+
+        if (fieldNotFound) {
             return false;
         }
         final Field field = fieldOpt.get();
+        return setFieldValue0(object, field, fieldValue);
+    }
+
+    /**
+     * Set field value for object.
+     *
+     * @param object     Object that you want to set value. can be null.
+     * @param field      Field to set value. can be null.
+     * @param fieldValue Value to set. can be null.
+     * @return true if set value successfully. Otherwise, return false.
+     * If return false, it might be due to some follow reasons:<br/>
+     * - Object or field name is null<br/>
+     * - Field not found.
+     */
+    public static boolean setFieldValue(@Nullable final Object object, @Nullable final Field field, @Nullable final Object fieldValue) {
+        if (object == null || field == null) {
+            return false;
+        }
+
+        return setFieldValue0(object, field, fieldValue);
+    }
+
+    /**
+     * Set value for static field.
+     *
+     * @param clazz      Class that having static field you want to set. can be null.
+     * @param fieldName  Name of field to set value. can be null.
+     * @param fieldValue Value to set. can be null.
+     * @return True if set value successfully. Otherwise, return false.
+     * If return false, it might be due to some follow reasons:<br/>
+     * - Class or field name is null<br/>
+     * - Field not found.
+     * @throws IllegalArgumentException When founded field is not static field.
+     */
+    public static boolean setValueForStaticField(@Nullable final String fieldName, @Nullable final Object fieldValue, @Nullable final Class<?> clazz) {
+        if (clazz == null || fieldName == null) {
+            return false;
+        }
+
+        final Optional<Field> fieldOpt = findField(fieldName, clazz);
+        final boolean fieldNotFound = fieldOpt.isEmpty();
+
+        if (fieldNotFound) {
+            return false;
+        }
+        final Field field = fieldOpt.get();
+        return setValueForStaticField(field, fieldValue);
+    }
+
+    /**
+     * Set value for static field.
+     *
+     * @param field      Field to set value. can be null.
+     * @param fieldValue Value to set. can be null.
+     * @return true if set value successfully. Otherwise, return false.
+     * If return false, it might be due to some follow reasons:<br/>
+     * - Object or field name is null<br/>
+     * - Field not found.
+     * @throws IllegalArgumentException When field is not static field.
+     */
+    public static boolean setValueForStaticField(@Nullable final Field field, @Nullable final Object fieldValue) {
+        if (field == null) {
+            return false;
+        }
+        if (!isStaticField(field)) {
+            throw new IllegalArgumentException(String.format("Field %s is not static field.", field.getName()));
+        }
+
+        return setFieldValue0(null, field, fieldValue);
+    }
+
+    private static boolean setFieldValue0(@Nullable final Object object, @NotNull final Field field, @Nullable final Object fieldValue) {
         final boolean canAccess = field.canAccess(object);
         field.setAccessible(true);
         try {
@@ -141,11 +217,12 @@ public final class ReflectionEx {
         field.setAccessible(canAccess);
         return true;
     }
-    
+
     //=================================================// Listing //=================================================//
     /**
      * Find all fields of a class. Those fields including private and public fields in
      * that one class and its ancestors.
+     *
      * @param clazz The class that you want to extract. Class can be null.
      * @return empty list if class is null, otherwise return its fields.
      */
@@ -182,7 +259,7 @@ public final class ReflectionEx {
     public static List<Field> nonStaticFieldsOf(@Nullable final Class<?> clazz) {
         return fieldsOf(clazz)
             .stream()
-            .filter(field -> !Modifier.isStatic(field.getModifiers()))
+            .filter(not(ReflectionEx::isStaticField))
             .collect(Collectors.toList());
     }
     
@@ -471,7 +548,7 @@ public final class ReflectionEx {
         }
         final String className = clazz.getSimpleName();
 
-        final Class<?> wrapperClass = primitiveWrapperClassMap.get(className);
+        final Class<?> wrapperClass = PRIMITIVE_WRAPPER_CLASS_MAP.get(className);
         if (wrapperClass == null) {
             throw new IllegalArgumentException(StringEx.format("Can not find the wrapper class of {}.", className));
         }
@@ -519,7 +596,7 @@ public final class ReflectionEx {
     }
 
     /**
-     * Check if a class has annotation or not.
+     * Check if certain class contains the annotation or not.
      *
      * @param clazz           can be null.
      * @param annotationClass can be null.
@@ -703,7 +780,19 @@ public final class ReflectionEx {
         if (clazz == null) {
             return false;
         }
-        return clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers());
+        return clazz.isInterface() || isAbstractClass(clazz);
+    }
+
+    /**
+     * Check if a class is abstract class.
+     * @param clazz can be null.
+     * @return true if the is abstract class. Otherwise, return false.
+     */
+    public static boolean isAbstractClass(@Nullable final Class<?> clazz) {
+        if (clazz == null) {
+            return false;
+        }
+        return Modifier.isAbstract(clazz.getModifiers());
     }
 
     /**
@@ -716,7 +805,7 @@ public final class ReflectionEx {
             return false;
         }
         final Class<?> type = field.getType();
-        return type.isPrimitive() || wrapperClasses.contains(type);
+        return type.isPrimitive() || WRAPPER_CLASSES.contains(type);
     }
     
     /**
