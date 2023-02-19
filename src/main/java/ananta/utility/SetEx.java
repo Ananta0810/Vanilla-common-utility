@@ -13,17 +13,19 @@ import java.util.stream.Collectors;
  * such as creation, getting, checking,...
  * Most methods can handle NULL input well and return empty set instead of NULL.
  */
-public final class ASet {
-    
-    private ASet() {}
-    
+public final class SetEx {
+
+    private SetEx() {
+    }
+
     /**
      * Get the size of a set.
+     *
      * @param set can be null.
      * @return 0 if set is null. Otherwise, return its size.
      */
     public static int sizeOf(@Nullable final Set<?> set) {
-        return ACollection.sizeOf(set);
+        return CollectionEx.sizeOf(set);
     }
     
     /**
@@ -32,7 +34,7 @@ public final class ASet {
      * @return true if set is null or is empty. Otherwise, return false.
      */
     public static boolean isEmpty(@Nullable final Set<?> set) {
-        return ACollection.isEmpty(set);
+        return CollectionEx.isEmpty(set);
     }
     
     /**
@@ -41,7 +43,7 @@ public final class ASet {
      * @return true if set has items. Otherwise, return false.
      */
     public static boolean isNotEmpty(@Nullable final Set<?> set) {
-        return ACollection.isNotEmpty(set);
+        return CollectionEx.isNotEmpty(set);
     }
     
     /**
@@ -83,7 +85,7 @@ public final class ASet {
      */
     @NotNull
     public static <T> Set<T> setOf(@Nullable final Collection<T> collection) {
-        return ACollection.isEmpty(collection) ? emptySet() : new HashSet<>(collection);
+        return CollectionEx.isEmpty(collection) ? emptySet() : new HashSet<>(collection);
     }
 
     /**
@@ -91,7 +93,7 @@ public final class ASet {
      * @return a modifiable set that contains all items of other collection.
      */
     @NotNull
-    public static <T, R> Set<R> setOf(@Nullable final Collection<T> collection, Function<T, R> keyProvider) {
+    public static <T, R> Set<R> setOf(@Nullable final Collection<T> collection, final Function<T, R> keyProvider) {
         return setOf(collection)
             .stream()
             .map(item -> Optional.ofNullable(item).map(keyProvider).orElse(null))
@@ -113,7 +115,7 @@ public final class ASet {
      */
     @NotNull
     public static <T> Set<T> nonNullSetOf(@Nullable final Collection<T> collection) {
-        return ACollection.isEmpty(collection)
+        return CollectionEx.isEmpty(collection)
             ? emptySet()
             : collection.stream().filter(Objects::nonNull).collect(Collectors.toSet());
     }
@@ -123,7 +125,7 @@ public final class ASet {
      * @return a modifiable set that contains all items of other collection.
      */
     @NotNull
-    public static <T, R> Set<R> nonNullSetOf(@Nullable final Collection<T> collection, Function<T, R> keyProvider) {
+    public static <T, R> Set<R> nonNullSetOf(@Nullable final Collection<T> collection, final Function<T, R> keyProvider) {
         return setOf(collection)
             .stream()
             .filter(Objects::nonNull)
@@ -157,7 +159,7 @@ public final class ASet {
      */
     @NotNull
     public static <T> Set<T> linkedSetOf(@Nullable final Collection<T> collection) {
-        return ACollection.isEmpty(collection)
+        return CollectionEx.isEmpty(collection)
             ? emptyLinkedSet()
             : new LinkedHashSet<>(collection);
     }
@@ -167,7 +169,7 @@ public final class ASet {
      * @return a modifiable set that contains all items of other collection.
      */
     @NotNull
-    public static <T, R> Set<R> linkedSetOf(@Nullable final Collection<T> collection, Function<T, R> keyProvider) {
+    public static <T, R> Set<R> linkedSetOf(@Nullable final Collection<T> collection, final Function<T, R> keyProvider) {
         return setOf(collection)
             .stream()
             .map(item -> Optional.ofNullable(item).map(keyProvider).orElse(null))
@@ -180,7 +182,7 @@ public final class ASet {
     @SafeVarargs
     @NotNull
     public static <T> Set<T> nonNullLinkedSetOf(@Nullable final T... items) {
-        return linkedSetOf(AList.nonNullListOf(items));
+        return linkedSetOf(ListEx.nonNullListOf(items));
     }
     
     /**
@@ -189,7 +191,7 @@ public final class ASet {
      */
     @NotNull
     public static <T> Set<T> nonNullLinkedSetOf(@Nullable final Collection<T> collection) {
-        return linkedSetOf(AList.nonNullListOf(collection));
+        return linkedSetOf(ListEx.nonNullListOf(collection));
     }
     
     /**
@@ -207,7 +209,7 @@ public final class ASet {
      */
     @NotNull
     public static <T> Set<T> treeSetOf(@Nullable final Collection<T> collection) {
-        return ACollection.isEmpty(collection) ? emptyTreeSet() : new TreeSet<>(collection);
+        return CollectionEx.isEmpty(collection) ? emptyTreeSet() : new TreeSet<>(collection);
     }
     
     /**
@@ -216,7 +218,7 @@ public final class ASet {
     @SafeVarargs
     @NotNull
     public static <T> Set<T> nonNullTreeSetOf(@Nullable final T... items) {
-        return treeSetOf(AList.nonNullListOf(items));
+        return treeSetOf(ListEx.nonNullListOf(items));
     }
     
     /**
@@ -225,7 +227,7 @@ public final class ASet {
      */
     @NotNull
     public static <T> Set<T> nonNullTreeSetOf(@Nullable final Collection<T> collection) {
-        return treeSetOf(AList.nonNullListOf(collection));
+        return treeSetOf(ListEx.nonNullListOf(collection));
     }
     
 }

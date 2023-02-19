@@ -11,12 +11,14 @@ import java.util.Set;
  * such as getting, checking,...
  * Most methods can handle NULL input well.
  */
-public final class ACollection {
-    
-    private ACollection() {}
-    
+public final class CollectionEx {
+
+    private CollectionEx() {
+    }
+
     /**
      * Get the size of a collection.
+     *
      * @param collection can be null.
      * @return 0 if collection is null. Otherwise, return its size.
      */
@@ -46,7 +48,7 @@ public final class ACollection {
         if (isEmpty(parentCollection) || isEmpty(collection)) {
             return false;
         }
-        Set<T> set = ASet.setOf(collection);
+        final Set<T> set = SetEx.setOf(collection);
         return parentCollection.stream().anyMatch(set::contains);
     }
 }

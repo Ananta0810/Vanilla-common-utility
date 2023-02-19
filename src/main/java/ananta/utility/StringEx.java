@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * Instead of returning NULL, methods will return a empty String.
  * Most methods can handle NULL input well.
  */
-public final class AString {
+public final class StringEx {
 
     public final static String EMPTY = "";
     private static final StringBuilder STRING_BUILDER = new StringBuilder();
@@ -26,8 +26,9 @@ public final class AString {
     public static final int SECURITY_MIN_LENGTH = 8;
     public static final int SECURITY_HINT_LENGTH = 3;
 
-    private AString() {}
-    
+    private StringEx() {
+    }
+
     /**
      * Check whether a string is empty or not.
      * @param value can be null.
@@ -154,7 +155,7 @@ public final class AString {
         if (isBlank(value)) {
             return true;
         }
-        return value.chars().allMatch(AString::isLetterOrDigitOrSpace);
+        return value.chars().allMatch(StringEx::isLetterOrDigitOrSpace);
     }
     
     /**
@@ -167,7 +168,7 @@ public final class AString {
         if (isBlank(value)) {
             return false;
         }
-        return value.chars().noneMatch(AString::isLetterOrDigitOrSpace);
+        return value.chars().noneMatch(StringEx::isLetterOrDigitOrSpace);
     }
     
     
@@ -540,7 +541,7 @@ public final class AString {
         if (words.length == 0) {
             return EMPTY;
         }
-        AList.listOf(words).forEach(STRING_BUILDER::append);
+        ListEx.listOf(words).forEach(STRING_BUILDER::append);
         final String result = STRING_BUILDER.toString();
         STRING_BUILDER.setLength(0);
         return result;
@@ -551,7 +552,7 @@ public final class AString {
         if (words.length == 0) {
             return EMPTY;
         }
-        AList.nonNullListOf(words).forEach(STRING_BUILDER::append);
+        ListEx.nonNullListOf(words).forEach(STRING_BUILDER::append);
         final String result = STRING_BUILDER.toString();
         STRING_BUILDER.setLength(0);
         return result;
@@ -565,7 +566,7 @@ public final class AString {
      */
     @NotNull
     public static String join(@Nullable final String delimiter, @Nullable final Collection<String> words) {
-        if (ACollection.isEmpty(words)) {
+        if (CollectionEx.isEmpty(words)) {
             return EMPTY;
         }
         return String.join(
@@ -583,7 +584,7 @@ public final class AString {
     @SafeVarargs
     @NotNull
     public static String join(@Nullable final String delimiter, @Nullable final String... words) {
-        return join(delimiter, AList.listOf(words));
+        return join(delimiter, ListEx.listOf(words));
     }
     
     /**
@@ -595,7 +596,7 @@ public final class AString {
     @SafeVarargs
     @NotNull
     public static String join(@Nullable final String delimiter, @Nullable final Object... words) {
-        return join(delimiter, AList.listOf(words).stream().map(String::valueOf).collect(Collectors.toList()));
+        return join(delimiter, ListEx.listOf(words).stream().map(String::valueOf).collect(Collectors.toList()));
     }
 
     /**

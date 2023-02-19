@@ -3,11 +3,7 @@ package ananta.utility;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -17,19 +13,21 @@ import java.util.stream.Collectors;
  * such as creation, getting, checking,...
  * Most methods can handle NULL input well.
  */
-public final class AMap {
-    
-    private AMap() {}
-    
+public final class MapEx {
+
+    private MapEx() {
+    }
+
     /**
      * Get the size of a map.
+     *
      * @param map can be null.
      * @return 0 if map is null. Otherwise, return its size.
      */
     public static int sizeOf(@Nullable final Map<?, ?> map) {
         return map == null ? 0 : map.size();
     }
-    
+
     /**
      * Check if a map is empty or not.
      * @param map can be null.
@@ -95,10 +93,10 @@ public final class AMap {
      */
     @NotNull
     public static <E, KEY, VALUE> Map<KEY, VALUE> mapOf(@Nullable final Collection<E> collection, @Nullable final Function<E, KEY> keyProvider, @Nullable final Function<E, VALUE> valueProvider) {
-        AGuard.checkNull(keyProvider, "Key provider must not be null.");
-        AGuard.checkNull(valueProvider, "Value provider must not be null.");
-        
-        if (ACollection.isEmpty(collection)) {
+        Guardians.checkNull(keyProvider, "Key provider must not be null.");
+        Guardians.checkNull(valueProvider, "Value provider must not be null.");
+
+        if (CollectionEx.isEmpty(collection)) {
             return emptyMap();
         }
         return collection.stream().collect(Collectors.toMap(keyProvider, valueProvider, (origin, duplicated) -> origin));
@@ -129,14 +127,14 @@ public final class AMap {
      */
     @NotNull
     public static <E, KEY, VALUE> Map<KEY, VALUE> nonNullMapOf(@Nullable final Collection<E> collection, @Nullable final Function<E, KEY> keyProvider, @Nullable final Function<E, VALUE> valueProvider) {
-        AGuard.checkNull(keyProvider, "Key provider must not be null.");
-        AGuard.checkNull(valueProvider, "Value provider must not be null.");
-        
-        if (ACollection.isEmpty(collection)) {
+        Guardians.checkNull(keyProvider, "Key provider must not be null.");
+        Guardians.checkNull(valueProvider, "Value provider must not be null.");
+
+        if (CollectionEx.isEmpty(collection)) {
             return emptyMap();
         }
-        Function<E, KEY> memoizedKeyProvider = memoize(keyProvider);
-        Function<E, VALUE> memoizedValueProvider = memoize(valueProvider);
+        final Function<E, KEY> memoizedKeyProvider = memoize(keyProvider);
+        final Function<E, VALUE> memoizedValueProvider = memoize(valueProvider);
         return collection.stream()
             .filter(item -> memoizedKeyProvider.apply(item) != null)
             .filter(item -> memoizedValueProvider.apply(item) != null)
@@ -144,8 +142,8 @@ public final class AMap {
     }
     
     // Visit following link for more information: https://stackoverflow.com/a/49634611
-    private static <K, V> Function<K, V> memoize(Function<K, V> provider) {
-        Map<K, V> map = emptyMap();
+    private static <K, V> Function<K, V> memoize(final Function<K, V> provider) {
+        final Map<K, V> map = emptyMap();
         return key -> map.computeIfAbsent(key, provider);
     }
     

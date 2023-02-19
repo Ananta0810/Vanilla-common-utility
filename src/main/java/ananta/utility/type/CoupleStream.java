@@ -42,6 +42,39 @@ public class CoupleStream<X, Y> implements Stream<Couple<X, Y>> {
         return delegate.collect(Collectors.toUnmodifiableList());
     }
 
+    public static <T> Builder<T> builder() {
+        return Stream.builder();
+    }
+
+    public static <T> Stream<T> of(T t) {
+        return Stream.of(t);
+    }
+
+    public static <T> Stream<T> ofNullable(T t) {
+        return Stream.ofNullable(t);
+    }
+
+    @SafeVarargs
+    public static <T> Stream<T> of(T... values) {
+        return Stream.of(values);
+    }
+
+    public static <T> Stream<T> iterate(T seed, UnaryOperator<T> f) {
+        return Stream.iterate(seed, f);
+    }
+
+    public static <T> Stream<T> iterate(T seed, Predicate<? super T> hasNext, UnaryOperator<T> next) {
+        return Stream.iterate(seed, hasNext, next);
+    }
+
+    public static <T> Stream<T> generate(Supplier<? extends T> s) {
+        return Stream.generate(s);
+    }
+
+    public static <T> Stream<T> concat(@NotNull Stream<? extends T> a, @NotNull Stream<? extends T> b) {
+        return Stream.concat(a, b);
+    }
+
     @Override
     public Stream<Couple<X, Y>> filter(Predicate<? super Couple<X, Y>> predicate) {
         return delegate.filter(predicate);
@@ -169,7 +202,6 @@ public class CoupleStream<X, Y> implements Stream<Couple<X, Y>> {
 
     @Override
     public <R, A> R collect(Collector<? super Couple<X, Y>, A, R> collector) {
-
         return delegate.collect(collector);
     }
 
@@ -211,39 +243,6 @@ public class CoupleStream<X, Y> implements Stream<Couple<X, Y>> {
     @Override
     public Optional<Couple<X, Y>> findAny() {
         return delegate.findAny();
-    }
-
-    public static <T> Builder<T> builder() {
-        return Stream.builder();
-    }
-
-    public static <T> Stream<T> of(T t) {
-        return Stream.of(t);
-    }
-    public static <T> Stream<T> ofNullable(T t) {
-
-        return Stream.ofNullable(t);
-    }
-    @SafeVarargs
-
-    public static <T> Stream<T> of(T... values) {
-        return Stream.of(values);
-    }
-
-    public static <T> Stream<T> iterate(T seed, UnaryOperator<T> f) {
-        return Stream.iterate(seed, f);
-    }
-    public static <T> Stream<T> iterate(T seed, Predicate<? super T> hasNext, UnaryOperator<T> next) {
-        return Stream.iterate(seed, hasNext, next);
-
-    }
-
-    public static <T> Stream<T> generate(Supplier<? extends T> s) {
-        return Stream.generate(s);
-    }
-
-    public static <T> Stream<T> concat(@NotNull Stream<? extends T> a, @NotNull Stream<? extends T> b) {
-        return Stream.concat(a, b);
     }
 
     @Override

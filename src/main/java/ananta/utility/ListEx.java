@@ -4,13 +4,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -23,17 +17,19 @@ import static java.util.function.Predicate.not;
  * such as creation, getting, checking,...
  * Most methods can handle NULL input well.
  */
-public final class AList {
+public final class ListEx {
     
-    private AList() {}
-    
+    private ListEx() {
+    }
+
     /**
      * Get the size of a list.
+     *
      * @param list can be null.
      * @return 0 if list is null. Otherwise, return its size.
      */
     public static int sizeOf(@Nullable final List<?> list) {
-        return ACollection.sizeOf(list);
+        return CollectionEx.sizeOf(list);
     }
     
     /**
@@ -42,7 +38,7 @@ public final class AList {
      * @return true if list is null or is empty. Otherwise, return false.
      */
     public static boolean isEmpty(@Nullable final List<?> list) {
-        return ACollection.isEmpty(list);
+        return CollectionEx.isEmpty(list);
     }
     
     /**
@@ -51,7 +47,7 @@ public final class AList {
      * @return true if list has items. Otherwise, return false.
      */
     public static boolean isNotEmpty(@Nullable final List<?> list) {
-        return ACollection.isNotEmpty(list);
+        return CollectionEx.isNotEmpty(list);
     }
     
     /**
@@ -79,7 +75,7 @@ public final class AList {
     @Contract("_ -> new")
     @NotNull
     public static <T> List<T> listOf(@Nullable final Collection<T> collection) {
-        return ACollection.isEmpty(collection) ? emptyList() : new ArrayList<>(collection);
+        return CollectionEx.isEmpty(collection) ? emptyList() : new ArrayList<>(collection);
     }
 
     /**
@@ -88,7 +84,7 @@ public final class AList {
      */
     @NotNull
     public static <T, R> List<R> listOf(@Nullable final Collection<T> collection, Function<T, R> keyProvider) {
-        if (ACollection.isEmpty(collection)) {
+        if (CollectionEx.isEmpty(collection)) {
             return emptyList();
         }
         if (collection instanceof List<?>) {
@@ -121,7 +117,7 @@ public final class AList {
     @Contract("_ -> new")
     @NotNull
     public static <T> List<T> nonNullListOf(@Nullable final Collection<T> collection) {
-        return ACollection.isEmpty(collection)
+        return CollectionEx.isEmpty(collection)
             ? emptyList()
             : collection.stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
@@ -273,9 +269,9 @@ public final class AList {
         if (isEmpty(tail)) {
             return listOf(head);
         }
-        
+
         List<T> headList = listOf(head);
-        Set<T> headSet = ASet.setOf(head);
+        Set<T> headSet = SetEx.setOf(head);
         
         List<T> itemsThatNotExistedInHead = tail.stream().filter(item -> !headSet.contains(item)).collect(Collectors.toList());
         headList.addAll(itemsThatNotExistedInHead);
@@ -295,7 +291,7 @@ public final class AList {
      */
     @NotNull
     public static <T> List<T> inBothList(@Nullable final List<T> left, @Nullable final List<T> right) {
-        Set<T> rightSet = ASet.setOf(right);
+        Set<T> rightSet = SetEx.setOf(right);
         
         Predicate<T> elementsThatAlsoInTheRight = rightSet::contains;
         
@@ -317,11 +313,11 @@ public final class AList {
      */
     @NotNull
     public static <T> List<T> inLeftListOnly(@Nullable final List<T> left, @Nullable final List<T> right) {
-        Set<T> leftSet = ASet.setOf(left);
-        Set<T> rightSet = ASet.setOf(right);
-        
+        Set<T> leftSet = SetEx.setOf(left);
+        Set<T> rightSet = SetEx.setOf(right);
+
         Predicate<T> elementsInLeftOnly = element -> leftSet.contains(element) && !rightSet.contains(element);
-        
+
         return concat(left, right)
             .stream()
             .filter(elementsInLeftOnly)
@@ -340,11 +336,11 @@ public final class AList {
      */
     @NotNull
     public static <T> List<T> inRightListOnly(@Nullable final List<T> left, @Nullable final List<T> right) {
-        Set<T> leftSet = ASet.setOf(left);
-        Set<T> rightSet = ASet.setOf(right);
-        
+        Set<T> leftSet = SetEx.setOf(left);
+        Set<T> rightSet = SetEx.setOf(right);
+
         Predicate<T> elementsInRightOnly = element -> !leftSet.contains(element) && rightSet.contains(element);
-        
+
         return concat(left, right)
             .stream()
             .filter(elementsInRightOnly)
@@ -363,11 +359,11 @@ public final class AList {
      */
     @NotNull
     public static <T> List<T> different(@Nullable final List<T> left, @Nullable final List<T> right) {
-        Set<T> listSet = ASet.setOf(left);
-        Set<T> otherSet = ASet.setOf(right);
-        
+        Set<T> listSet = SetEx.setOf(left);
+        Set<T> otherSet = SetEx.setOf(right);
+
         Predicate<T> inBothList = element -> listSet.contains(element) && otherSet.contains(element);
-        
+
         return concat(left, right)
             .stream()
             .filter(not(inBothList))

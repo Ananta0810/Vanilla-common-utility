@@ -15,13 +15,14 @@ import java.util.Objects;
  * - Starting with 'check': Method will check input and throw exception.
  * - Starting with 'is': Method will check input and return boolean value.
  */
-public final class AGuard {
-    
-    private AGuard() {}
-    
+public final class Guardians {
+
+    private Guardians() {
+    }
+
     public static Object checkNull(@Nullable final Object object, @Nullable final String message, @Nullable final Object... args) {
         if (object == null) {
-            throw new IllegalArgumentException(AString.format(message, args));
+            throw new IllegalArgumentException(StringEx.format(message, args));
         }
         return object;
     }
@@ -33,15 +34,15 @@ public final class AGuard {
     }
 
     public static boolean isAnyNull(@Nullable final Object... objects) {
-        return AList.listOf(objects).stream().anyMatch(Objects::isNull);
+        return ListEx.listOf(objects).stream().anyMatch(Objects::isNull);
     }
 
     public static boolean isAllNull(@Nullable final Object... objects) {
-        return AList.listOf(objects).stream().allMatch(Objects::isNull);
+        return ListEx.listOf(objects).stream().allMatch(Objects::isNull);
     }
 
     public static boolean isNoneNull(@Nullable final Object... objects) {
-        return AList.listOf(objects).stream().noneMatch(Objects::isNull);
+        return ListEx.listOf(objects).stream().noneMatch(Objects::isNull);
     }
 
 }

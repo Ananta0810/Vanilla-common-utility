@@ -19,7 +19,7 @@ import java.util.stream.Stream;
  * Most methods can handle NULL input well.
  */
 @SuppressWarnings("unused")
-public final class AReflection {
+public final class ReflectionEx {
 
     private final static Map<String, Class<?>> primitiveWrapperClassMap;
 
@@ -37,9 +37,10 @@ public final class AReflection {
         );
     }
 
-    private AReflection() {}
-    
-    private static final Set<Class<?>> wrapperClasses = ASet.setOf(
+    private ReflectionEx() {
+    }
+
+    private static final Set<Class<?>> wrapperClasses = SetEx.setOf(
         Boolean.class, Byte.class, Character.class, Double.class, Float.class, Integer.class, Long.class, Short.class, Void.class
     );
     
@@ -127,7 +128,7 @@ public final class AReflection {
     @NotNull
     public static List<Field> fieldsOf(@Nullable final Class<?> clazz) {
         if (clazz == null) {
-            return AList.emptyList();
+            return ListEx.emptyList();
         }
         final List<Class<?>> classes = ancestorClassesOf(clazz);
         return classes.stream().map(Class::getDeclaredFields).flatMap(Stream::of).collect(Collectors.toList());
@@ -156,7 +157,7 @@ public final class AReflection {
     @NotNull
     public static List<String> fieldNamesOf(@Nullable final Class<?> clazz) {
         if (clazz == null) {
-            return AList.emptyList();
+            return ListEx.emptyList();
         }
         return nonStaticFieldsOf(clazz).stream().map(Field::getName).collect(Collectors.toList());
     }
@@ -169,7 +170,7 @@ public final class AReflection {
      */
     @NotNull
     public static Set<String> fieldNameSetOf(@Nullable final Class<?> clazz) {
-        return ASet.setOf(fieldNamesOf(clazz));
+        return SetEx.setOf(fieldNamesOf(clazz));
     }
     
     /**
@@ -180,7 +181,7 @@ public final class AReflection {
     @NotNull
     public static List<Annotation> annotationsOf(@Nullable final Class<?> clazz) {
         if (clazz == null){
-            return AList.emptyList();
+            return ListEx.emptyList();
         }
         final List<Class<?>> classes = ancestorClassesOf(clazz);
         return classes.stream().map(Class::getAnnotations).flatMap(Stream::of).collect(Collectors.toList());
@@ -194,9 +195,9 @@ public final class AReflection {
     @NotNull
     public static List<Annotation> annotationsOf(@Nullable final Field field) {
         if (field == null) {
-            return AList.emptyList();
+            return ListEx.emptyList();
         }
-        return AList.listOf(field.getDeclaredAnnotations());
+        return ListEx.listOf(field.getDeclaredAnnotations());
     }
     
     /**
@@ -210,7 +211,7 @@ public final class AReflection {
         if (fieldName == null|| clazz == null) {
             return List.of();
         }
-        return findField(fieldName, clazz).map(field -> AList.listOf(field.getAnnotations())).orElseGet(AList::emptyList);
+        return findField(fieldName, clazz).map(field -> ListEx.listOf(field.getAnnotations())).orElseGet(ListEx::emptyList);
     }
     
     /**
@@ -221,13 +222,13 @@ public final class AReflection {
     @NotNull
     public static List<Class<?>> ancestorClassesOf(@Nullable final Class<?> clazz) {
         if (clazz == null) {
-            return AList.emptyList();
+            return ListEx.emptyList();
         }
-        final List<Class<?>> classes = AList.emptyList();
+        final List<Class<?>> classes = ListEx.emptyList();
         Class<?> tempClass = clazz;
         while (tempClass != null) {
             classes.add(tempClass);
-            classes.addAll(AList.listOf(tempClass.getInterfaces()));
+            classes.addAll(ListEx.listOf(tempClass.getInterfaces()));
             tempClass = tempClass.getSuperclass();
         }
 
@@ -246,15 +247,15 @@ public final class AReflection {
         final @Nullable Class<R> parentClass
     ) {
         if (wrapperClasses == null || parentClass == null) {
-            return AList.emptyList();
+            return ListEx.emptyList();
         }
 
         return wrapperClasses
             .stream()
             .map(Class::getDeclaredClasses)
             .flatMap(Arrays::stream)
-            .filter(clazz -> AReflection.isChildClassOf(parentClass, clazz))
-            .map(entity -> AReflection.castToClass(parentClass, entity))
+            .filter(clazz -> ReflectionEx.isChildClassOf(parentClass, clazz))
+            .map(entity -> ReflectionEx.castToClass(parentClass, entity))
             .flatMap(Optional::stream)
             .collect(Collectors.toList());
     }
@@ -434,7 +435,7 @@ public final class AReflection {
 
         final Class<?> wrapperClass = primitiveWrapperClassMap.get(className);
         if (wrapperClass == null) {
-            throw new IllegalArgumentException(AString.format("Can not find the wrapper class of {}.", className));
+            throw new IllegalArgumentException(StringEx.format("Can not find the wrapper class of {}.", className));
         }
         return wrapperClass;
     }

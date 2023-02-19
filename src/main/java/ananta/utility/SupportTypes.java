@@ -36,10 +36,8 @@ class SupportTypes {
             }
             if (this.leftIterator.hasNext()) {
                 goNextOneInLeftIterator();
-//                return true;
             }
             return this.rightIterator.hasNext();
-//            return false;
         }
 
         L getLeft() {
