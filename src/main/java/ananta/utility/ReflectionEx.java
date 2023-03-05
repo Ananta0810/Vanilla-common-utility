@@ -56,17 +56,20 @@ public final class ReflectionEx {
         if (field == null || object == null) {
             return Optional.empty();
         }
+        final boolean currentAccessState = field.canAccess(object);
 
-        final boolean canAccess = field.canAccess(object);
+        boolean canAccess = field.trySetAccessible();
+        if (!canAccess) {
+            return Optional.empty();
+        }
 
         field.setAccessible(true);
         Object value = null;
         try {
             value = field.get(object);
-        } catch (final IllegalAccessException e) {
-            e.printStackTrace();
+        } catch (final IllegalAccessException ignored) {
         }
-        field.setAccessible(canAccess);
+        field.setAccessible(currentAccessState);
 
         return Optional.ofNullable(value);
     }
@@ -556,6 +559,19 @@ public final class ReflectionEx {
     }
 
     //=================================================// Checkers //=================================================//
+    /**
+     * Check if a class is a builtin class or not.
+     *
+     * @param clazz Class that you want to check.
+     * @return False if class is null or is not builtin class. Otherwise, return true.
+     */
+    public static boolean isBuiltinClass(@Nullable final Class<?> clazz) {
+        if (clazz == null) {
+            return false;
+        }
+        return clazz.getPackageName().startsWith("java.");
+    }
+
     /**
      * Check if a class is static class or not.
      *
