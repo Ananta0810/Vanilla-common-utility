@@ -43,9 +43,10 @@ public final class ReflectionEx {
     private ReflectionEx() {
     }
 
-
     /**
      * Find field's value of an object.
+     * NOTE: This method not support find value of static field.
+     * If you want to find static field value, please use method {@link #findStaticFieldValue(Field field) findStaticFieldValue}
      *
      * @param field  field of the object. Field can be null.
      * @param object object that contains the value. Object can be null.
@@ -56,9 +57,12 @@ public final class ReflectionEx {
         if (field == null || object == null) {
             return Optional.empty();
         }
+        if (isStaticField(field)) {
+            return Optional.empty();
+        }
         final boolean currentAccessState = field.canAccess(object);
 
-        boolean canAccess = field.trySetAccessible();
+        final boolean canAccess = field.trySetAccessible();
         if (!canAccess) {
             return Optional.empty();
         }
@@ -76,6 +80,7 @@ public final class ReflectionEx {
 
     /**
      * Find field's value of an object.
+     * NOTE: This method not support find value of static field.
      * <pre>
      * Result example:
      *      - Object:
@@ -94,7 +99,7 @@ public final class ReflectionEx {
      *                   Field name should not be null.
      * @return Optional.empty() if input is null or field can not be accessed. Otherwise, return Optional of object.
      */
-    public static Optional<Object> findFieldValue(@Nullable final Object object, @Nullable final String fieldNames) {
+    public static Optional<Object> findFieldValue(@Nullable final String fieldNames, @Nullable final Object object) {
         if (object == null || fieldNames == null) {
             return Optional.empty();
         }
@@ -104,6 +109,56 @@ public final class ReflectionEx {
             result = findFieldValue0(result, field).orElse(null);
         }
         return Optional.ofNullable(result);
+    }
+
+    /**
+     * Find field's value of static class.
+     *
+     * @param field field of the static class. Field can be null.
+     * @return Optional.empty() if field is not static field or can not be accessed. Otherwise, return Optional of object.
+     */
+    @NotNull
+    public static Optional<?> findStaticFieldValue(@Nullable final Field field) {
+        if (!isStaticField(field)) {
+            return Optional.empty();
+        }
+        final boolean currentAccessState = field.canAccess(null);
+
+        final boolean canAccess = field.trySetAccessible();
+        if (!canAccess) {
+            return Optional.empty();
+        }
+
+        field.setAccessible(true);
+        Object value = null;
+        try {
+            value = field.get(null);
+        } catch (final IllegalAccessException ignored) {
+        }
+        field.setAccessible(currentAccessState);
+
+        return Optional.ofNullable(value);
+    }
+
+    /**
+     * Find field's value of static class.
+     * NOTE: This method not support search nested fields.
+     *
+     * @param fieldName name of static field. Can be null.
+     * @param clazz     class that you want to find static field. Can be null.
+     * @return Optional.empty() if input is null or field is not static field or field can not be accessed.
+     * Otherwise, return Optional of object.
+     */
+    @NotNull
+    public static Optional<?> findStaticFieldValue(@Nullable final String fieldName, @Nullable final Class<?> clazz) {
+        if (fieldName == null || clazz == null) {
+            return Optional.empty();
+        }
+        return staticFieldsOf(clazz)
+            .stream()
+            .filter(field -> Objects.equals(field.getName(), fieldName))
+            .findFirst()
+            .flatMap(ReflectionEx::findStaticFieldValue);
     }
 
     @NotNull
