@@ -1,5 +1,6 @@
 package ananta.utility;
 
+import ananta.utility.lambdas.StringPredicates;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.helpers.MessageFormatter;
@@ -21,7 +22,10 @@ import java.util.stream.Collectors;
  */
 public final class StringX {
 
+    public static final StringPredicates is = StringPredicates.is();
+    public static final StringPredicates isNot = StringPredicates.isNot();
     public final static String EMPTY = "";
+    
     private static final StringBuilder STRING_BUILDER = new StringBuilder();
     private static final String SECURITY_CHAR = "*";
     private static final int SECURITY_MIN_LENGTH = 8;
