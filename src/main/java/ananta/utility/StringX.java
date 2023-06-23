@@ -8,6 +8,7 @@ import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -15,16 +16,16 @@ import java.util.stream.Collectors;
 /**
  * @author Ananta0810
  * This class provides some methods related to type String.
- * Instead of returning NULL, methods will return a empty String.
+ * Instead of returning NULL, methods will return an empty String.
  * Most methods can handle NULL input well.
  */
 public final class StringX {
 
     public final static String EMPTY = "";
     private static final StringBuilder STRING_BUILDER = new StringBuilder();
-    public static final String SECURITY_CHAR = "*";
-    public static final int SECURITY_MIN_LENGTH = 8;
-    public static final int SECURITY_HINT_LENGTH = 3;
+    private static final String SECURITY_CHAR = "*";
+    private static final int SECURITY_MIN_LENGTH = 8;
+    private static final int SECURITY_HINT_LENGTH = 3;
 
     private StringX() {
     }
@@ -37,7 +38,7 @@ public final class StringX {
     public static boolean isEmpty(@Nullable final String value) {
         return value == null || value.isEmpty();
     }
-    
+
     /**
      * Check whether a string has characters aside from empty space.
      * @param value can be null.
@@ -46,7 +47,7 @@ public final class StringX {
     public static boolean isNotEmpty(@Nullable final String value) {
         return !isEmpty(value);
     }
-    
+
     /**
      * Check whether a string is blank or not.
      * @param value can be null.
@@ -55,7 +56,7 @@ public final class StringX {
     public static boolean isBlank(@Nullable final String value) {
         return value == null || value.isBlank();
     }
-    
+
     /**
      * Check whether a string has characters aside from blank space.
      * @param value can be null.
@@ -65,14 +66,25 @@ public final class StringX {
         return !isBlank(value);
     }
 
-    @NotNull
+    /**
+     * Get an empty value string when input is null.
+     * <pre>Example:
+     *     (null) -> ""
+     *     ("") -> ""
+     *     ("Hello") -> "Hello"
+     * </pre>
+     */
     public static String emptyIfNull(@Nullable final String string) {
         return string == null ? EMPTY : string;
     }
 
     /**
      * Get length of a string.
-     * @param input String that you want to get length, can be null.
+     * <pre>Example:
+     *     (null) -> 0
+     *     ("") -> 0
+     *     ("Hello") -> 5
+     * </pre>
      * @return 0 if input is null, Otherwise, return length of input.
      */
     public static int lengthOf(@Nullable final String input) {
@@ -83,112 +95,40 @@ public final class StringX {
     }
 
     /**
-     * Check if a string contains only digit (0 -> 9).
-     * This method will consider space and empty as non-digit character.
-     * @param value can be null.
-     * @return false if input is empty or has any non-digit character (Include space).
+     * Check if two string is equals to each other.
+     * @return false if any input is null. Otherwise, return the check result.
      */
-    public static boolean hasDigitOnly(@Nullable final String value) {
-        if (isBlank(value)) {
-            return false;
-        }
-        return value.chars().allMatch(Character::isDigit);
+    public static boolean isEquals(@Nullable final String value, @Nullable final String input) {
+        return value != null && value.equals(input);
     }
-    
+
     /**
-     * Check if a string contains only digit (0 -> 9) or space.
-     * @param value can be null.
-     * @return false if input is empty or has any non-digit character (Exclude space).
+     * Check if all characters of a string is meeting a predicate.
+     * @return true if input is not blank and all characters meet required predicate. Otherwise, return false;
      */
-    public static boolean hasDigitAndSpaceOnly(@Nullable final String value) {
-        if (isBlank(value)) {
-            return true;
-        }
-        return value.chars().allMatch(character -> Character.isDigit(character) || Character.isSpaceChar(character));
+    public static boolean allCharactersMatch(@NotNull final Predicate<Character> predicate, @Nullable final String input) {
+        Guardians.checkNull(predicate, "Predicate should not be null.");
+        return isNotBlank(input) && input.chars().allMatch((character) -> predicate.test((char) character));
     }
-    
+
     /**
-     * Check if a string contains only letter (a -> z, A -> Z).
-     * This method will consider space and empty as non-letter character.
-     * @param value can be null.
-     * @return false if input is empty or has any non-letter character (Include space).
+     * Check if some characters of a string is meeting a predicate.
+     * @return true if input is not blank and some characters meet required predicate. Otherwise, return false;
      */
-    public static boolean hasLetterOnly(@Nullable final String value) {
-        if (isBlank(value)) {
-            return false;
-        }
-        return value.chars().allMatch(Character::isLetter);
+    public static boolean anyCharactersMatch(@NotNull final Predicate<Character> predicate, @Nullable final String input) {
+        Guardians.checkNull(predicate, "Predicate should not be null.");
+        return isNotBlank(input) && input.chars().anyMatch((character) -> predicate.test((char) character));
     }
-    
+
     /**
-     * Check if a string contains only letter (a -> z, A -> Z) and space.
-     * @param value can be null.
-     * @return false if input is empty or has any non-letter character (Exclude space).
+     * Check if no characters of a string is meeting a predicate.
+     * @return true if input is not blank and no characters meet required predicate. Otherwise, return false;
      */
-    public static boolean hasLetterAndSpaceOnly(@Nullable final String value) {
-        if (isBlank(value)) {
-            return true;
-        }
-        return value.chars().allMatch(character -> Character.isLetter(character) || Character.isSpaceChar(character));
+    public static boolean noCharactersMatch(@NotNull final Predicate<Character> predicate, @Nullable final String input) {
+        Guardians.checkNull(predicate, "Predicate should not be null.");
+        return isNotBlank(input) && input.chars().noneMatch((character) -> predicate.test((char) character));
     }
-    
-    /**
-     * Check if a string contains only letter (a -> z, A -> Z).
-     * This method will consider space and empty as non-letter character.
-     * @param value can be null.
-     * @return false if input is empty or has any non-letter character (Include space).
-     */
-    public static boolean hasLetterAndDigitOnly(@Nullable final String value) {
-        if (isBlank(value)) {
-            return false;
-        }
-        return value.chars().allMatch(character -> Character.isLetter(character) || Character.isDigit(character));
-    }
-    
-    /**
-     * Check if a string contains only letter (a -> z, A -> Z).
-     * This method will consider space and empty as non-letter character.
-     * @param value can be null.
-     * @return false if input is empty or has any non-letter character (Include space).
-     */
-    public static boolean hasLetterAndDigitAndSpaceOnly(@Nullable final String value) {
-        if (isBlank(value)) {
-            return true;
-        }
-        return value.chars().allMatch(StringX::isLetterOrDigitOrSpace);
-    }
-    
-    /**
-     * Check if a string contains only letter (a -> z, A -> Z).
-     * This method will consider space and empty as non-letter character.
-     * @param value can be null.
-     * @return false if input is empty or has any non-letter character (Include space).
-     */
-    public static boolean hasUniqueCharacterOnly(@Nullable final String value) {
-        if (isBlank(value)) {
-            return false;
-        }
-        return value.chars().noneMatch(StringX::isLetterOrDigitOrSpace);
-    }
-    
-    
-    /**
-     * Check if a string contains only letter (a -> z, A -> Z).
-     * This method will consider space and empty as non-letter character.
-     * @param value can be null.
-     * @return false if input is empty or has any non-letter character (Include space).
-     */
-    public static boolean hasUniqueCharacterAndSpaceOnly(@Nullable final String value) {
-        if (isBlank(value)) {
-            return true;
-        }
-        return value.chars().noneMatch(character -> Character.isLetter(character) || Character.isDigit(character));
-    }
-    
-    private static boolean isLetterOrDigitOrSpace(final int character) {
-        return Character.isLetter(character) || Character.isDigit(character) || Character.isSpaceChar(character);
-    }
-    
+
     /**
      * Get a substring before the first occurrence of a specific word.
      * <pre>Example:
@@ -213,7 +153,7 @@ public final class StringX {
         }
         return parent.substring(0, index);
     }
-    
+
     /**
      * Get a substring that does not include the substring after a specific word.
      * <pre>Example:
@@ -316,7 +256,7 @@ public final class StringX {
         }
         return parent.substring(index + word.length());
     }
-    
+
     /**
      * Get a substring that does not include the substring before a specific word.
      * <pre>Example:
@@ -501,9 +441,9 @@ public final class StringX {
     /**
      * Append non-null variables into a string.
      * @param messagePattern a format text. can be null.
-     * This messagePattern will contains '{}' which will then replace by following arguments.
+     * This messagePattern will contain '{}' which will then replace by following arguments.
      * Example: My name is {}.
-     * For more information, please visit this page: https://stackoverflow.com/a/43262120
+     * For more information, please visit this page: <a href="https://stackoverflow.com/a/43262120">...</a>
      * @param args values which will be used to fill in messagePattern.
      * @return empty if messagePattern is null. Otherwise, return a string which contains the arguments.
      */
@@ -560,7 +500,7 @@ public final class StringX {
 
     /**
      * Join list of string. This method will join only non-null string.
-     * @param delimiter can be null. Will be turn to empty string if null.
+     * @param delimiter can be null. Will be turned to empty string if null.
      * @param words can be null.
      * @return empty if words is null. Otherwise, return the joined string.
      */
@@ -574,26 +514,24 @@ public final class StringX {
             words.stream().filter(Objects::nonNull).toArray(CharSequence[]::new)
         );
     }
-    
+
     /**
      * Join list of string. This method will join only non-null string.
-     * @param delimiter can be null. Will be turn to empty string if null.
+     * @param delimiter can be null. Will be turned to empty string if null.
      * @param words can be null.
      * @return empty if words is null. Otherwise, return the joined string.
      */
-    @SafeVarargs
     @NotNull
     public static String join(@Nullable final String delimiter, @Nullable final String... words) {
         return join(delimiter, ListX.listOf(words));
     }
-    
+
     /**
      * Join list of string. This method will join only non-null string.
-     * @param delimiter can be null. Will be turn to empty string if null.
+     * @param delimiter can be null. Will be turned to empty string if null.
      * @param words can be null.
      * @return empty if words is null. Otherwise, return the joined string.
      */
-    @SafeVarargs
     @NotNull
     public static String join(@Nullable final String delimiter, @Nullable final Object... words) {
         return join(delimiter, ListX.listOf(words).stream().map(String::valueOf).collect(Collectors.toList()));
