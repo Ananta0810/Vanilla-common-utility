@@ -22,7 +22,7 @@ public final class Guardians {
 
     public static Object checkNull(@Nullable final Object object, @Nullable final String message, @Nullable final Object... args) {
         if (object == null) {
-            throw new IllegalArgumentException(StringEx.format(message, args));
+            throw new IllegalArgumentException(StringX.format(message, args));
         }
         return object;
     }
@@ -34,15 +34,15 @@ public final class Guardians {
     }
 
     public static boolean isAnyNull(@Nullable final Object... objects) {
-        return ListEx.listOf(objects).stream().anyMatch(Objects::isNull);
+        return ListX.listOf(objects).stream().anyMatch(Objects::isNull);
     }
 
     public static boolean isAllNull(@Nullable final Object... objects) {
-        return ListEx.listOf(objects).stream().allMatch(Objects::isNull);
+        return ListX.listOf(objects).stream().allMatch(Objects::isNull);
     }
 
     public static boolean isNoneNull(@Nullable final Object... objects) {
-        return ListEx.listOf(objects).stream().noneMatch(Objects::isNull);
+        return ListX.listOf(objects).stream().noneMatch(Objects::isNull);
     }
 
 }

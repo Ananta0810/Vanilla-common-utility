@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
  * such as creation, getting, checking,...
  * Most methods can handle NULL input well.
  */
-public final class MapEx {
+public final class MapX {
 
-    private MapEx() {
+    private MapX() {
     }
 
     /**
@@ -96,7 +96,7 @@ public final class MapEx {
         Guardians.checkNull(keyProvider, "Key provider must not be null.");
         Guardians.checkNull(valueProvider, "Value provider must not be null.");
 
-        if (CollectionEx.isEmpty(collection)) {
+        if (CollectionX.isEmpty(collection)) {
             return emptyMap();
         }
         return collection.stream().collect(Collectors.toMap(keyProvider, valueProvider, (origin, duplicated) -> origin));
@@ -130,7 +130,7 @@ public final class MapEx {
         Guardians.checkNull(keyProvider, "Key provider must not be null.");
         Guardians.checkNull(valueProvider, "Value provider must not be null.");
 
-        if (CollectionEx.isEmpty(collection)) {
+        if (CollectionX.isEmpty(collection)) {
             return emptyMap();
         }
         final Function<E, KEY> memoizedKeyProvider = memoize(keyProvider);

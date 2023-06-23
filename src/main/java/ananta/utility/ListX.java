@@ -17,9 +17,9 @@ import static java.util.function.Predicate.not;
  * such as creation, getting, checking,...
  * Most methods can handle NULL input well.
  */
-public final class ListEx {
+public final class ListX {
     
-    private ListEx() {
+    private ListX() {
     }
 
     /**
@@ -29,7 +29,7 @@ public final class ListEx {
      * @return 0 if list is null. Otherwise, return its size.
      */
     public static int sizeOf(@Nullable final List<?> list) {
-        return CollectionEx.sizeOf(list);
+        return CollectionX.sizeOf(list);
     }
     
     /**
@@ -38,7 +38,7 @@ public final class ListEx {
      * @return true if list is null or is empty. Otherwise, return false.
      */
     public static boolean isEmpty(@Nullable final List<?> list) {
-        return CollectionEx.isEmpty(list);
+        return CollectionX.isEmpty(list);
     }
     
     /**
@@ -47,7 +47,7 @@ public final class ListEx {
      * @return true if list has items. Otherwise, return false.
      */
     public static boolean isNotEmpty(@Nullable final List<?> list) {
-        return CollectionEx.isNotEmpty(list);
+        return CollectionX.isNotEmpty(list);
     }
     
     /**
@@ -75,7 +75,7 @@ public final class ListEx {
     @Contract("_ -> new")
     @NotNull
     public static <T> List<T> listOf(@Nullable final Collection<T> collection) {
-        return CollectionEx.isEmpty(collection) ? emptyList() : new ArrayList<>(collection);
+        return CollectionX.isEmpty(collection) ? emptyList() : new ArrayList<>(collection);
     }
 
     /**
@@ -84,7 +84,7 @@ public final class ListEx {
      */
     @NotNull
     public static <T, R> List<R> listOf(@Nullable final Collection<T> collection, Function<T, R> keyProvider) {
-        if (CollectionEx.isEmpty(collection)) {
+        if (CollectionX.isEmpty(collection)) {
             return emptyList();
         }
         if (collection instanceof List<?>) {
@@ -117,7 +117,7 @@ public final class ListEx {
     @Contract("_ -> new")
     @NotNull
     public static <T> List<T> nonNullListOf(@Nullable final Collection<T> collection) {
-        return CollectionEx.isEmpty(collection)
+        return CollectionX.isEmpty(collection)
             ? emptyList()
             : collection.stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
@@ -271,7 +271,7 @@ public final class ListEx {
         }
 
         List<T> headList = listOf(head);
-        Set<T> headSet = SetEx.setOf(head);
+        Set<T> headSet = SetX.setOf(head);
         
         List<T> itemsThatNotExistedInHead = tail.stream().filter(item -> !headSet.contains(item)).collect(Collectors.toList());
         headList.addAll(itemsThatNotExistedInHead);
@@ -291,7 +291,7 @@ public final class ListEx {
      */
     @NotNull
     public static <T> List<T> inBothList(@Nullable final List<T> left, @Nullable final List<T> right) {
-        Set<T> rightSet = SetEx.setOf(right);
+        Set<T> rightSet = SetX.setOf(right);
         
         Predicate<T> elementsThatAlsoInTheRight = rightSet::contains;
         
@@ -313,8 +313,8 @@ public final class ListEx {
      */
     @NotNull
     public static <T> List<T> inLeftListOnly(@Nullable final List<T> left, @Nullable final List<T> right) {
-        Set<T> leftSet = SetEx.setOf(left);
-        Set<T> rightSet = SetEx.setOf(right);
+        Set<T> leftSet = SetX.setOf(left);
+        Set<T> rightSet = SetX.setOf(right);
 
         Predicate<T> elementsInLeftOnly = element -> leftSet.contains(element) && !rightSet.contains(element);
 
@@ -336,8 +336,8 @@ public final class ListEx {
      */
     @NotNull
     public static <T> List<T> inRightListOnly(@Nullable final List<T> left, @Nullable final List<T> right) {
-        Set<T> leftSet = SetEx.setOf(left);
-        Set<T> rightSet = SetEx.setOf(right);
+        Set<T> leftSet = SetX.setOf(left);
+        Set<T> rightSet = SetX.setOf(right);
 
         Predicate<T> elementsInRightOnly = element -> !leftSet.contains(element) && rightSet.contains(element);
 
@@ -359,8 +359,8 @@ public final class ListEx {
      */
     @NotNull
     public static <T> List<T> different(@Nullable final List<T> left, @Nullable final List<T> right) {
-        Set<T> listSet = SetEx.setOf(left);
-        Set<T> otherSet = SetEx.setOf(right);
+        Set<T> listSet = SetX.setOf(left);
+        Set<T> otherSet = SetX.setOf(right);
 
         Predicate<T> inBothList = element -> listSet.contains(element) && otherSet.contains(element);
 

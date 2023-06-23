@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * Instead of returning NULL, methods will return a empty String.
  * Most methods can handle NULL input well.
  */
-public final class StringEx {
+public final class StringX {
 
     public final static String EMPTY = "";
     private static final StringBuilder STRING_BUILDER = new StringBuilder();
@@ -26,7 +26,7 @@ public final class StringEx {
     public static final int SECURITY_MIN_LENGTH = 8;
     public static final int SECURITY_HINT_LENGTH = 3;
 
-    private StringEx() {
+    private StringX() {
     }
 
     /**
@@ -155,7 +155,7 @@ public final class StringEx {
         if (isBlank(value)) {
             return true;
         }
-        return value.chars().allMatch(StringEx::isLetterOrDigitOrSpace);
+        return value.chars().allMatch(StringX::isLetterOrDigitOrSpace);
     }
     
     /**
@@ -168,7 +168,7 @@ public final class StringEx {
         if (isBlank(value)) {
             return false;
         }
-        return value.chars().noneMatch(StringEx::isLetterOrDigitOrSpace);
+        return value.chars().noneMatch(StringX::isLetterOrDigitOrSpace);
     }
     
     
@@ -541,7 +541,7 @@ public final class StringEx {
         if (words.length == 0) {
             return EMPTY;
         }
-        ListEx.listOf(words).forEach(STRING_BUILDER::append);
+        ListX.listOf(words).forEach(STRING_BUILDER::append);
         final String result = STRING_BUILDER.toString();
         STRING_BUILDER.setLength(0);
         return result;
@@ -552,7 +552,7 @@ public final class StringEx {
         if (words.length == 0) {
             return EMPTY;
         }
-        ListEx.nonNullListOf(words).forEach(STRING_BUILDER::append);
+        ListX.nonNullListOf(words).forEach(STRING_BUILDER::append);
         final String result = STRING_BUILDER.toString();
         STRING_BUILDER.setLength(0);
         return result;
@@ -566,7 +566,7 @@ public final class StringEx {
      */
     @NotNull
     public static String join(@Nullable final String delimiter, @Nullable final Collection<String> words) {
-        if (CollectionEx.isEmpty(words)) {
+        if (CollectionX.isEmpty(words)) {
             return EMPTY;
         }
         return String.join(
@@ -584,7 +584,7 @@ public final class StringEx {
     @SafeVarargs
     @NotNull
     public static String join(@Nullable final String delimiter, @Nullable final String... words) {
-        return join(delimiter, ListEx.listOf(words));
+        return join(delimiter, ListX.listOf(words));
     }
     
     /**
@@ -596,7 +596,7 @@ public final class StringEx {
     @SafeVarargs
     @NotNull
     public static String join(@Nullable final String delimiter, @Nullable final Object... words) {
-        return join(delimiter, ListEx.listOf(words).stream().map(String::valueOf).collect(Collectors.toList()));
+        return join(delimiter, ListX.listOf(words).stream().map(String::valueOf).collect(Collectors.toList()));
     }
 
     /**
