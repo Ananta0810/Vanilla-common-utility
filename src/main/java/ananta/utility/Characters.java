@@ -1,11 +1,15 @@
 package ananta.utility;
 
-import ananta.utility.lambdas.Lambdas;
+import ananta.utility.lambdas.Fluent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static ananta.utility.lambdas.Lambdas.whether;
 
 public final class Characters {
 
@@ -34,7 +38,23 @@ public final class Characters {
 
     public static void main(final String[] args) {
         final String text = "Hello";
-        final boolean hello = Lambdas.test(text).as(value -> value.isNot.blank().and(value.is.containing("h")));
+        final boolean hello = Fluent
+            .of(text)
+            .test(value -> whether(value.isNot.blank())
+                .and(value.is.containing("H"))
+                .and(value.is.allCharactersMatch(Characters.isLetter().or(Characters.isSpace())))
+                .and(value.map(toLowerCase()).is.containing("h"))
+                .and(value.map(toUpperCase()).is.equalsTo("HELLO"))
+            );
         System.out.println(hello);
     }
+    @NotNull
+    private static Function<String, String> toUpperCase() {
+        return String::toUpperCase;
+    }
+    @NotNull
+    private static Function<String, String> toLowerCase() {
+        return String::toLowerCase;
+    }
+
 }

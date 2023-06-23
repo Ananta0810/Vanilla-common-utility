@@ -18,8 +18,9 @@ public final class Lambdas {
         return predicate.test(target);
     }
 
-    public static Fluent<String, StringMorePredicates> test(@Nullable final String target) {
-        return new Fluent<>(target, StringMorePredicates.INSTANCES);
+    public static <T> Predicate<T> whether(@NotNull final Predicate<T> predicate){
+        Guardians.checkNull(predicate, "Predicate should not be null.");
+        return predicate;
     }
 
     public static <T> Predicate<T> predicate(@NotNull final Predicate<T> predicate){

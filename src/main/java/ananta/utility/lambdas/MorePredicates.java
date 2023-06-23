@@ -3,14 +3,17 @@ package ananta.utility.lambdas;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
-class MorePredicates<T> {
+abstract class MorePredicates<T> {
 
     protected final boolean negate;
+    protected final Function<T, T> mapper;
 
-    protected MorePredicates(final boolean negate) {
+    protected MorePredicates(final boolean negate, final Function<T, T> mapper) {
         this.negate = negate;
+        this.mapper = mapper;
     }
 
     protected Predicate<String> valueOf(@NotNull final Predicate<String> predicate) {
@@ -18,5 +21,10 @@ class MorePredicates<T> {
         return this.negate ? predicate.negate() : predicate;
     }
 
+    protected T map(final T input) {
+        return mapper.apply(input);
+    }
+
+    public abstract <Y extends MorePredicates<T>> Y cloneWithMapper(Function<T, T> mapper);
 }
 
