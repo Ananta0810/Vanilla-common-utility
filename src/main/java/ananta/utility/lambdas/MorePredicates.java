@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-class MorePredicates {
+class MorePredicates<T> {
 
     protected final boolean negate;
 

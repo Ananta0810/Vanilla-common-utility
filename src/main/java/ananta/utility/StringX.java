@@ -1,6 +1,6 @@
 package ananta.utility;
 
-import ananta.utility.lambdas.StringPredicates;
+import ananta.utility.lambdas.StringMorePredicates;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.helpers.MessageFormatter;
@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
  */
 public final class StringX {
 
-    public static final StringPredicates is = StringPredicates.is();
-    public static final StringPredicates isNot = StringPredicates.isNot();
+    public static final StringMorePredicates is = StringMorePredicates.INSTANCES.is;
+    public static final StringMorePredicates isNot = StringMorePredicates.INSTANCES.isNot;
     public final static String EMPTY = "";
     
     private static final StringBuilder STRING_BUILDER = new StringBuilder();

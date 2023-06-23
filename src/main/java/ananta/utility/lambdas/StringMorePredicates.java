@@ -8,21 +8,12 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-public final class StringPredicates extends MorePredicates {
+public class StringMorePredicates extends MorePredicates<String> {
 
-    private static final StringPredicates IS_INSTANCE = new StringPredicates(false);
-    private static final StringPredicates IS_NOT_INSTANCE = new StringPredicates(true);
+    public static final FluentPredicate<String, StringMorePredicates> INSTANCES = new FluentPredicate<>(new StringMorePredicates(false), new StringMorePredicates(true));
 
-    StringPredicates(final boolean negate) {
+    StringMorePredicates(final boolean negate) {
         super(negate);
-    }
-
-    public static StringPredicates is() {
-        return IS_INSTANCE;
-    }
-
-    public static StringPredicates isNot() {
-        return IS_NOT_INSTANCE;
     }
 
     public Predicate<String> empty() {
@@ -41,11 +32,11 @@ public final class StringPredicates extends MorePredicates {
         return valueOf((input) -> input != null && length != null && input.length() == length.intValue());
     }
 
-    public Predicate<String> longerThan(@Nullable final Number length) {
+    public Predicate<String> hasLengthMoreThan(@Nullable final Number length) {
         return valueOf((input) -> input != null && length != null && input.length() > length.intValue());
     }
 
-    public Predicate<String> shorterThan(@Nullable final Number length) {
+    public Predicate<String> hasLengthLessThan(@Nullable final Number length) {
         return valueOf((input) -> input != null && length != null && input.length() < length.intValue());
     }
 
@@ -57,7 +48,7 @@ public final class StringPredicates extends MorePredicates {
         return valueOf((input) -> value != null && value.equalsIgnoreCase(input));
     }
 
-    public Predicate<String> has(@Nullable final String value) {
+    public Predicate<String> containing(@Nullable final String value) {
         return valueOf((input) -> input != null && value != null && input.contains(value));
     }
 
@@ -92,5 +83,7 @@ public final class StringPredicates extends MorePredicates {
     public Predicate<String> nonCharactersMatch(@NotNull final Predicate<Character> predicate) {
         return input -> StringX.noCharactersMatch(predicate, input);
     }
+
+
 
 }
