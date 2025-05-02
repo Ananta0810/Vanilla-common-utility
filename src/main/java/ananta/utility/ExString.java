@@ -1,6 +1,5 @@
 package ananta.utility;
 
-import ananta.utility.lambdas.StringMorePredicates;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.helpers.MessageFormatter;
@@ -22,8 +21,6 @@ import java.util.stream.Collectors;
  */
 public final class ExString {
 
-    public static final StringMorePredicates is = StringMorePredicates.INSTANCES.is;
-    public static final StringMorePredicates isNot = StringMorePredicates.INSTANCES.isNot;
     public final static String EMPTY = "";
     
     private static final StringBuilder STRING_BUILDER = new StringBuilder();
