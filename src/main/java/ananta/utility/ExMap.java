@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
  * such as creation, getting, checking,...
  * Most methods can handle NULL input well.
  */
-public final class MapX {
+public final class ExMap {
 
-    private MapX() {
+    private ExMap() {
     }
 
     /**
@@ -93,10 +93,10 @@ public final class MapX {
      */
     @NotNull
     public static <E, KEY, VALUE> Map<KEY, VALUE> mapOf(@Nullable final Collection<E> collection, @Nullable final Function<E, KEY> keyProvider, @Nullable final Function<E, VALUE> valueProvider) {
-        Guardians.checkNull(keyProvider, "Key provider must not be null.");
-        Guardians.checkNull(valueProvider, "Value provider must not be null.");
+        ExNull.checkNull(keyProvider, "Key provider must not be null.");
+        ExNull.checkNull(valueProvider, "Value provider must not be null.");
 
-        if (CollectionX.isEmpty(collection)) {
+        if (ExCollection.isEmpty(collection)) {
             return emptyMap();
         }
         return collection.stream().collect(Collectors.toMap(keyProvider, valueProvider, (origin, duplicated) -> origin));
@@ -127,10 +127,10 @@ public final class MapX {
      */
     @NotNull
     public static <E, KEY, VALUE> Map<KEY, VALUE> nonNullMapOf(@Nullable final Collection<E> collection, @Nullable final Function<E, KEY> keyProvider, @Nullable final Function<E, VALUE> valueProvider) {
-        Guardians.checkNull(keyProvider, "Key provider must not be null.");
-        Guardians.checkNull(valueProvider, "Value provider must not be null.");
+        ExNull.checkNull(keyProvider, "Key provider must not be null.");
+        ExNull.checkNull(valueProvider, "Value provider must not be null.");
 
-        if (CollectionX.isEmpty(collection)) {
+        if (ExCollection.isEmpty(collection)) {
             return emptyMap();
         }
         final Function<E, KEY> memoizedKeyProvider = memoize(keyProvider);

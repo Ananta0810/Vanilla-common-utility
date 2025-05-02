@@ -1,6 +1,6 @@
 package ananta.utility.lambdas;
 
-import ananta.utility.StringX;
+import ananta.utility.ExString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +28,7 @@ public class StringMorePredicates extends MorePredicates<String> {
     }
 
     public Predicate<String> empty() {
-        return valueOf(input -> StringX.isEmpty(map(input)));
+        return valueOf(input -> ExString.isEmpty(map(input)));
     }
 
     public Predicate<String> nullValue() {
@@ -36,7 +36,7 @@ public class StringMorePredicates extends MorePredicates<String> {
     }
 
     public Predicate<String> blank() {
-        return valueOf(input -> StringX.isBlank(map(input)));
+        return valueOf(input -> ExString.isBlank(map(input)));
     }
 
     public Predicate<String> hasLength(@Nullable final Number length) {
@@ -63,7 +63,7 @@ public class StringMorePredicates extends MorePredicates<String> {
     public Predicate<String> equalsTo(@Nullable final String value) {
         return valueOf((input) -> {
             final String mappedInput = map(input);
-            return StringX.isEquals(value, mappedInput);
+            return ExString.isEquals(value, mappedInput);
         });
     }
 
@@ -119,21 +119,21 @@ public class StringMorePredicates extends MorePredicates<String> {
     public Predicate<String> allCharactersMatch(@NotNull final Predicate<Character> predicate) {
         return valueOf(input -> {
             final String mappedInput = map(input);
-            return StringX.allCharactersMatch(predicate, mappedInput);
+            return ExString.allCharactersMatch(predicate, mappedInput);
         });
     }
 
     public Predicate<String> anyCharactersMatch(@NotNull final Predicate<Character> predicate) {
         return valueOf(input -> {
             final String mappedInput = map(input);
-            return StringX.anyCharactersMatch(predicate, mappedInput);
+            return ExString.anyCharactersMatch(predicate, mappedInput);
         });
     }
 
     public Predicate<String> nonCharactersMatch(@NotNull final Predicate<Character> predicate) {
         return valueOf(input -> {
             final String mappedInput = map(input);
-            return StringX.noCharactersMatch(predicate, mappedInput);
+            return ExString.noCharactersMatch(predicate, mappedInput);
         });
     }
 

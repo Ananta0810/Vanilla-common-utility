@@ -11,9 +11,9 @@ import java.util.Set;
  * such as getting, checking,...
  * Most methods can handle NULL input well.
  */
-public final class CollectionX {
+public final class ExCollection {
 
-    private CollectionX() {
+    private ExCollection() {
     }
 
     /**
@@ -48,7 +48,7 @@ public final class CollectionX {
         if (isEmpty(parentCollection) || isEmpty(collection)) {
             return false;
         }
-        final Set<T> set = SetX.setOf(collection);
+        final Set<T> set = ExSet.setOf(collection);
         return parentCollection.stream().anyMatch(set::contains);
     }
 }

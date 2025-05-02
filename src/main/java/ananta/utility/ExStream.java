@@ -13,9 +13,9 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @SuppressWarnings("unused")
-public class StreamX {
+public class ExStream {
 
-    private StreamX() {}
+    private ExStream() {}
 
     /**
      * Extract stream from iterator.
@@ -84,7 +84,7 @@ public class StreamX {
      * lambda function with 2 parameters.
      */
     public static <T, R> CoupleStream<T, R> zip(final @Nullable Collection<T> keyCollection, @NotNull final Function<T, R> valueProvider) {
-        final List<R> valueCollection = StreamX.from(keyCollection).map(valueProvider).collect(Collectors.toList());
+        final List<R> valueCollection = ExStream.from(keyCollection).map(valueProvider).collect(Collectors.toList());
         return zip(keyCollection, valueCollection);
     }
 
@@ -154,7 +154,7 @@ public class StreamX {
         @NotNull final Function<X, Collection<Y>> valueCollectionProvider,
         @NotNull final BiFunction<? super X, ? super Y, ? extends R> zipper
     ) {
-        final Iterator<X> keyIterator = StreamX.from(keyCollection).iterator();
+        final Iterator<X> keyIterator = ExStream.from(keyCollection).iterator();
 
         final SupportTypes.FlatZipIterator<X, Y> helperIterator = new SupportTypes.FlatZipIterator<>(keyIterator, valueCollectionProvider);
         final Iterator<R> zipIterator = new Iterator<>() {
@@ -181,8 +181,8 @@ public class StreamX {
         @Nullable final Collection<? extends R> right,
         @NotNull final BiFunction<? super L, ? super R, ? extends T> zipper
     ) {
-        final Spliterator<? extends L> leftSpliterator = StreamX.from(left).spliterator();
-        final Spliterator<? extends R> rightSpliterator = StreamX.from(right).spliterator();
+        final Spliterator<? extends L> leftSpliterator = ExStream.from(left).spliterator();
+        final Spliterator<? extends R> rightSpliterator = ExStream.from(right).spliterator();
 
         final Iterator<L> leftIterator = Spliterators.iterator(leftSpliterator);
         final Iterator<R> rightIterator = Spliterators.iterator(rightSpliterator);

@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * Instead of returning NULL, methods will return an empty String.
  * Most methods can handle NULL input well.
  */
-public final class StringX {
+public final class ExString {
 
     public static final StringMorePredicates is = StringMorePredicates.INSTANCES.is;
     public static final StringMorePredicates isNot = StringMorePredicates.INSTANCES.isNot;
@@ -31,7 +31,7 @@ public final class StringX {
     private static final int SECURITY_MIN_LENGTH = 8;
     private static final int SECURITY_HINT_LENGTH = 3;
 
-    private StringX() {
+    private ExString() {
     }
 
     /**
@@ -111,7 +111,7 @@ public final class StringX {
      * @return true if input is not blank and all characters meet required predicate. Otherwise, return false;
      */
     public static boolean allCharactersMatch(@NotNull final Predicate<Character> predicate, @Nullable final String input) {
-        Guardians.checkNull(predicate, "Predicate should not be null.");
+        ExNull.checkNull(predicate, "Predicate should not be null.");
         return isNotBlank(input) && input.chars().allMatch((character) -> predicate.test((char) character));
     }
 
@@ -120,7 +120,7 @@ public final class StringX {
      * @return true if input is not blank and some characters meet required predicate. Otherwise, return false;
      */
     public static boolean anyCharactersMatch(@NotNull final Predicate<Character> predicate, @Nullable final String input) {
-        Guardians.checkNull(predicate, "Predicate should not be null.");
+        ExNull.checkNull(predicate, "Predicate should not be null.");
         return isNotBlank(input) && input.chars().anyMatch((character) -> predicate.test((char) character));
     }
 
@@ -129,7 +129,7 @@ public final class StringX {
      * @return true if input is not blank and no characters meet required predicate. Otherwise, return false;
      */
     public static boolean noCharactersMatch(@NotNull final Predicate<Character> predicate, @Nullable final String input) {
-        Guardians.checkNull(predicate, "Predicate should not be null.");
+        ExNull.checkNull(predicate, "Predicate should not be null.");
         return isNotBlank(input) && input.chars().noneMatch((character) -> predicate.test((char) character));
     }
 
@@ -485,7 +485,7 @@ public final class StringX {
         if (words.length == 0) {
             return EMPTY;
         }
-        ListX.listOf(words).forEach(STRING_BUILDER::append);
+        ExList.listOf(words).forEach(STRING_BUILDER::append);
         final String result = STRING_BUILDER.toString();
         STRING_BUILDER.setLength(0);
         return result;
@@ -496,7 +496,7 @@ public final class StringX {
         if (words.length == 0) {
             return EMPTY;
         }
-        ListX.nonNullListOf(words).forEach(STRING_BUILDER::append);
+        ExList.nonNullListOf(words).forEach(STRING_BUILDER::append);
         final String result = STRING_BUILDER.toString();
         STRING_BUILDER.setLength(0);
         return result;
@@ -510,7 +510,7 @@ public final class StringX {
      */
     @NotNull
     public static String join(@Nullable final String delimiter, @Nullable final Collection<String> words) {
-        if (CollectionX.isEmpty(words)) {
+        if (ExCollection.isEmpty(words)) {
             return EMPTY;
         }
         return String.join(
@@ -527,7 +527,7 @@ public final class StringX {
      */
     @NotNull
     public static String join(@Nullable final String delimiter, @Nullable final String... words) {
-        return join(delimiter, ListX.listOf(words));
+        return join(delimiter, ExList.listOf(words));
     }
 
     /**
@@ -538,7 +538,7 @@ public final class StringX {
      */
     @NotNull
     public static String join(@Nullable final String delimiter, @Nullable final Object... words) {
-        return join(delimiter, ListX.listOf(words).stream().map(String::valueOf).collect(Collectors.toList()));
+        return join(delimiter, ExList.listOf(words).stream().map(String::valueOf).collect(Collectors.toList()));
     }
 
     /**

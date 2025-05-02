@@ -11,14 +11,14 @@ import java.util.stream.Collectors;
 
 import static ananta.utility.lambdas.Lambdas.whether;
 
-public final class Characters {
+public final class ExCharacter {
 
     private static final Set<Character> SPECIAL_CHARACTERS = Arrays
         .stream("!#$%&'()*+,-./:;<=>?@[]^_`{|}~".split(""))
         .map(c -> c.charAt(0))
         .collect(Collectors.toSet());
 
-    private Characters() {}
+    private ExCharacter() {}
 
     public static Predicate<Character> isDigit() {
         return character -> character != null && Character.isDigit(character);
@@ -42,7 +42,7 @@ public final class Characters {
             .of(text)
             .test(value -> whether(value.isNot.blank())
                 .and(value.is.containing("H"))
-                .and(value.is.allCharactersMatch(Characters.isLetter().or(Characters.isSpace())))
+                .and(value.is.allCharactersMatch(isLetter().or(isSpace())))
                 .and(value.map(toLowerCase()).is.containing("h"))
                 .and(value.map(toUpperCase()).is.equalsTo("HELLO"))
             );

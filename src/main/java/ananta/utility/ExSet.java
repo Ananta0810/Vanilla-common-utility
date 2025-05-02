@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
  * such as creation, getting, checking,...
  * Most methods can handle NULL input well and return empty set instead of NULL.
  */
-public final class SetX {
+public final class ExSet {
 
-    private SetX() {
+    private ExSet() {
     }
 
     /**
@@ -25,7 +25,7 @@ public final class SetX {
      * @return 0 if set is null. Otherwise, return its size.
      */
     public static int sizeOf(@Nullable final Set<?> set) {
-        return CollectionX.sizeOf(set);
+        return ExCollection.sizeOf(set);
     }
     
     /**
@@ -34,7 +34,7 @@ public final class SetX {
      * @return true if set is null or is empty. Otherwise, return false.
      */
     public static boolean isEmpty(@Nullable final Set<?> set) {
-        return CollectionX.isEmpty(set);
+        return ExCollection.isEmpty(set);
     }
     
     /**
@@ -43,7 +43,7 @@ public final class SetX {
      * @return true if set has items. Otherwise, return false.
      */
     public static boolean isNotEmpty(@Nullable final Set<?> set) {
-        return CollectionX.isNotEmpty(set);
+        return ExCollection.isNotEmpty(set);
     }
     
     /**
@@ -85,7 +85,7 @@ public final class SetX {
      */
     @NotNull
     public static <T> Set<T> setOf(@Nullable final Collection<T> collection) {
-        return CollectionX.isEmpty(collection) ? emptySet() : new HashSet<>(collection);
+        return ExCollection.isEmpty(collection) ? emptySet() : new HashSet<>(collection);
     }
 
     /**
@@ -115,7 +115,7 @@ public final class SetX {
      */
     @NotNull
     public static <T> Set<T> nonNullSetOf(@Nullable final Collection<T> collection) {
-        return CollectionX.isEmpty(collection)
+        return ExCollection.isEmpty(collection)
             ? emptySet()
             : collection.stream().filter(Objects::nonNull).collect(Collectors.toSet());
     }
@@ -159,7 +159,7 @@ public final class SetX {
      */
     @NotNull
     public static <T> Set<T> linkedSetOf(@Nullable final Collection<T> collection) {
-        return CollectionX.isEmpty(collection)
+        return ExCollection.isEmpty(collection)
             ? emptyLinkedSet()
             : new LinkedHashSet<>(collection);
     }
@@ -182,7 +182,7 @@ public final class SetX {
     @SafeVarargs
     @NotNull
     public static <T> Set<T> nonNullLinkedSetOf(@Nullable final T... items) {
-        return linkedSetOf(ListX.nonNullListOf(items));
+        return linkedSetOf(ExList.nonNullListOf(items));
     }
     
     /**
@@ -191,7 +191,7 @@ public final class SetX {
      */
     @NotNull
     public static <T> Set<T> nonNullLinkedSetOf(@Nullable final Collection<T> collection) {
-        return linkedSetOf(ListX.nonNullListOf(collection));
+        return linkedSetOf(ExList.nonNullListOf(collection));
     }
     
     /**
@@ -209,7 +209,7 @@ public final class SetX {
      */
     @NotNull
     public static <T> Set<T> treeSetOf(@Nullable final Collection<T> collection) {
-        return CollectionX.isEmpty(collection) ? emptyTreeSet() : new TreeSet<>(collection);
+        return ExCollection.isEmpty(collection) ? emptyTreeSet() : new TreeSet<>(collection);
     }
     
     /**
@@ -218,7 +218,7 @@ public final class SetX {
     @SafeVarargs
     @NotNull
     public static <T> Set<T> nonNullTreeSetOf(@Nullable final T... items) {
-        return treeSetOf(ListX.nonNullListOf(items));
+        return treeSetOf(ExList.nonNullListOf(items));
     }
     
     /**
@@ -227,7 +227,7 @@ public final class SetX {
      */
     @NotNull
     public static <T> Set<T> nonNullTreeSetOf(@Nullable final Collection<T> collection) {
-        return treeSetOf(ListX.nonNullListOf(collection));
+        return treeSetOf(ExList.nonNullListOf(collection));
     }
     
 }
