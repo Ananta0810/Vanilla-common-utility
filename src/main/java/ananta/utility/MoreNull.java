@@ -15,14 +15,14 @@ import java.util.Objects;
  * - Starting with 'check': Method will check input and throw exception.
  * - Starting with 'is': Method will check input and return boolean value.
  */
-public final class ExNull {
+public final class MoreNull {
 
-    private ExNull() {
+    private MoreNull() {
     }
 
     public static Object checkNull(@Nullable final Object object, @Nullable final String message, @Nullable final Object... args) {
         if (object == null) {
-            throw new IllegalArgumentException(ExString.format(message, args));
+            throw new IllegalArgumentException(MoreString.format(message, args));
         }
         return object;
     }
@@ -34,15 +34,15 @@ public final class ExNull {
     }
 
     public static boolean isAnyNull(@Nullable final Object... objects) {
-        return ExList.listOf(objects).stream().anyMatch(Objects::isNull);
+        return MoreList.listOf(objects).stream().anyMatch(Objects::isNull);
     }
 
     public static boolean isAllNull(@Nullable final Object... objects) {
-        return ExList.listOf(objects).stream().allMatch(Objects::isNull);
+        return MoreList.listOf(objects).stream().allMatch(Objects::isNull);
     }
 
     public static boolean isNoneNull(@Nullable final Object... objects) {
-        return ExList.listOf(objects).stream().noneMatch(Objects::isNull);
+        return MoreList.listOf(objects).stream().noneMatch(Objects::isNull);
     }
 
 }

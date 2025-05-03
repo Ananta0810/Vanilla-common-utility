@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * Instead of returning NULL, methods will return an empty String.
  * Most methods can handle NULL input well.
  */
-public final class ExString {
+public final class MoreString {
 
     public final static String EMPTY = "";
     
@@ -28,7 +28,7 @@ public final class ExString {
     private static final int SECURITY_MIN_LENGTH = 8;
     private static final int SECURITY_HINT_LENGTH = 3;
 
-    private ExString() {
+    private MoreString() {
     }
 
     /**
@@ -108,7 +108,7 @@ public final class ExString {
      * @return true if input is not blank and all characters meet required predicate. Otherwise, return false;
      */
     public static boolean allCharactersMatch(@NotNull final Predicate<Character> predicate, @Nullable final String input) {
-        ExNull.checkNull(predicate, "Predicate should not be null.");
+        MoreNull.checkNull(predicate, "Predicate should not be null.");
         return isNotBlank(input) && input.chars().allMatch((character) -> predicate.test((char) character));
     }
 
@@ -117,7 +117,7 @@ public final class ExString {
      * @return true if input is not blank and some characters meet required predicate. Otherwise, return false;
      */
     public static boolean anyCharactersMatch(@NotNull final Predicate<Character> predicate, @Nullable final String input) {
-        ExNull.checkNull(predicate, "Predicate should not be null.");
+        MoreNull.checkNull(predicate, "Predicate should not be null.");
         return isNotBlank(input) && input.chars().anyMatch((character) -> predicate.test((char) character));
     }
 
@@ -126,7 +126,7 @@ public final class ExString {
      * @return true if input is not blank and no characters meet required predicate. Otherwise, return false;
      */
     public static boolean noCharactersMatch(@NotNull final Predicate<Character> predicate, @Nullable final String input) {
-        ExNull.checkNull(predicate, "Predicate should not be null.");
+        MoreNull.checkNull(predicate, "Predicate should not be null.");
         return isNotBlank(input) && input.chars().noneMatch((character) -> predicate.test((char) character));
     }
 
@@ -482,7 +482,7 @@ public final class ExString {
         if (words.length == 0) {
             return EMPTY;
         }
-        ExList.listOf(words).forEach(STRING_BUILDER::append);
+        MoreList.listOf(words).forEach(STRING_BUILDER::append);
         final String result = STRING_BUILDER.toString();
         STRING_BUILDER.setLength(0);
         return result;
@@ -493,7 +493,7 @@ public final class ExString {
         if (words.length == 0) {
             return EMPTY;
         }
-        ExList.nonNullListOf(words).forEach(STRING_BUILDER::append);
+        MoreList.nonNullListOf(words).forEach(STRING_BUILDER::append);
         final String result = STRING_BUILDER.toString();
         STRING_BUILDER.setLength(0);
         return result;
@@ -507,7 +507,7 @@ public final class ExString {
      */
     @NotNull
     public static String join(@Nullable final String delimiter, @Nullable final Collection<String> words) {
-        if (ExCollection.isEmpty(words)) {
+        if (MoreCollection.isEmpty(words)) {
             return EMPTY;
         }
         return String.join(
@@ -524,7 +524,7 @@ public final class ExString {
      */
     @NotNull
     public static String join(@Nullable final String delimiter, @Nullable final String... words) {
-        return join(delimiter, ExList.listOf(words));
+        return join(delimiter, MoreList.listOf(words));
     }
 
     /**
@@ -535,7 +535,7 @@ public final class ExString {
      */
     @NotNull
     public static String join(@Nullable final String delimiter, @Nullable final Object... words) {
-        return join(delimiter, ExList.listOf(words).stream().map(String::valueOf).collect(Collectors.toList()));
+        return join(delimiter, MoreList.listOf(words).stream().map(String::valueOf).collect(Collectors.toList()));
     }
 
     /**

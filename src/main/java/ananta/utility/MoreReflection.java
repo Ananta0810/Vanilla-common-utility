@@ -18,7 +18,7 @@ import static java.util.function.Predicate.not;
  * Most methods can handle NULL input well.
  */
 @SuppressWarnings({"unused", "UnusedReturnValue"})
-public final class ExReflection {
+public final class MoreReflection {
 
     private static final Map<String, Class<?>> PRIMITIVE_WRAPPER_CLASS_MAP;
 
@@ -37,10 +37,10 @@ public final class ExReflection {
             Map.entry("void", Void.class)
         );
 
-        WRAPPER_CLASSES = ExSet.setOf(PRIMITIVE_WRAPPER_CLASS_MAP.values());
+        WRAPPER_CLASSES = MoreSet.setOf(PRIMITIVE_WRAPPER_CLASS_MAP.values());
     }
 
-    private ExReflection() {
+    private MoreReflection() {
     }
 
     /**
@@ -158,7 +158,7 @@ public final class ExReflection {
             .stream()
             .filter(field -> Objects.equals(field.getName(), fieldName))
             .findFirst()
-            .flatMap(ExReflection::findStaticFieldValue);
+            .flatMap(MoreReflection::findStaticFieldValue);
     }
 
     @NotNull
@@ -287,7 +287,7 @@ public final class ExReflection {
     @NotNull
     public static List<Field> fieldsOf(@Nullable final Class<?> clazz) {
         if (clazz == null) {
-            return ExList.emptyList();
+            return MoreList.emptyList();
         }
         final List<Class<?>> classes = ancestorClassesOf(clazz);
         return classes.stream().map(Class::getDeclaredFields).flatMap(Stream::of).collect(Collectors.toList());
@@ -301,9 +301,9 @@ public final class ExReflection {
      */
     public static List<Field> staticFieldsOf(@Nullable final Class<?> clazz) {
         if (clazz == null) {
-            return ExList.emptyList();
+            return MoreList.emptyList();
         }
-        return ExReflection.fieldsOf(clazz).stream().filter(ExReflection::isStaticField).collect(Collectors.toUnmodifiableList());
+        return MoreReflection.fieldsOf(clazz).stream().filter(MoreReflection::isStaticField).collect(Collectors.toUnmodifiableList());
     }
 
     /**
@@ -317,7 +317,7 @@ public final class ExReflection {
     public static List<Field> nonStaticFieldsOf(@Nullable final Class<?> clazz) {
         return fieldsOf(clazz)
             .stream()
-            .filter(not(ExReflection::isStaticField))
+            .filter(not(MoreReflection::isStaticField))
             .collect(Collectors.toList());
     }
     
@@ -330,7 +330,7 @@ public final class ExReflection {
     @NotNull
     public static List<String> fieldNamesOf(@Nullable final Class<?> clazz) {
         if (clazz == null) {
-            return ExList.emptyList();
+            return MoreList.emptyList();
         }
         return nonStaticFieldsOf(clazz).stream().map(Field::getName).collect(Collectors.toList());
     }
@@ -343,7 +343,7 @@ public final class ExReflection {
      */
     @NotNull
     public static Set<String> fieldNameSetOf(@Nullable final Class<?> clazz) {
-        return ExSet.setOf(fieldNamesOf(clazz));
+        return MoreSet.setOf(fieldNamesOf(clazz));
     }
     
     /**
@@ -354,7 +354,7 @@ public final class ExReflection {
     @NotNull
     public static List<Annotation> annotationsOf(@Nullable final Class<?> clazz) {
         if (clazz == null){
-            return ExList.emptyList();
+            return MoreList.emptyList();
         }
         final List<Class<?>> classes = ancestorClassesOf(clazz);
         return classes.stream().map(Class::getAnnotations).flatMap(Stream::of).collect(Collectors.toList());
@@ -368,9 +368,9 @@ public final class ExReflection {
     @NotNull
     public static List<Annotation> annotationsOf(@Nullable final Field field) {
         if (field == null) {
-            return ExList.emptyList();
+            return MoreList.emptyList();
         }
-        return ExList.listOf(field.getDeclaredAnnotations());
+        return MoreList.listOf(field.getDeclaredAnnotations());
     }
     
     /**
@@ -384,7 +384,7 @@ public final class ExReflection {
         if (fieldName == null|| clazz == null) {
             return List.of();
         }
-        return findField(fieldName, clazz).map(field -> ExList.listOf(field.getAnnotations())).orElseGet(ExList::emptyList);
+        return findField(fieldName, clazz).map(field -> MoreList.listOf(field.getAnnotations())).orElseGet(MoreList::emptyList);
     }
     
     /**
@@ -395,13 +395,13 @@ public final class ExReflection {
     @NotNull
     public static List<Class<?>> ancestorClassesOf(@Nullable final Class<?> clazz) {
         if (clazz == null) {
-            return ExList.emptyList();
+            return MoreList.emptyList();
         }
-        final List<Class<?>> classes = ExList.emptyList();
+        final List<Class<?>> classes = MoreList.emptyList();
         Class<?> tempClass = clazz;
         while (tempClass != null) {
             classes.add(tempClass);
-            classes.addAll(ExList.listOf(tempClass.getInterfaces()));
+            classes.addAll(MoreList.listOf(tempClass.getInterfaces()));
             tempClass = tempClass.getSuperclass();
         }
 
@@ -420,15 +420,15 @@ public final class ExReflection {
         final @Nullable Class<R> parentClass
     ) {
         if (wrapperClasses == null || parentClass == null) {
-            return ExList.emptyList();
+            return MoreList.emptyList();
         }
 
         return wrapperClasses
             .stream()
             .map(Class::getDeclaredClasses)
             .flatMap(Arrays::stream)
-            .filter(clazz -> ExReflection.isChildClassOf(parentClass, clazz))
-            .map(entity -> ExReflection.castToClass(parentClass, entity))
+            .filter(clazz -> MoreReflection.isChildClassOf(parentClass, clazz))
+            .map(entity -> MoreReflection.castToClass(parentClass, entity))
             .flatMap(Optional::stream)
             .collect(Collectors.toList());
     }
@@ -608,7 +608,7 @@ public final class ExReflection {
 
         final Class<?> wrapperClass = PRIMITIVE_WRAPPER_CLASS_MAP.get(className);
         if (wrapperClass == null) {
-            throw new IllegalArgumentException(ExString.format("Can not find the wrapper class of {}.", className));
+            throw new IllegalArgumentException(MoreString.format("Can not find the wrapper class of {}.", className));
         }
         return wrapperClass;
     }
@@ -718,7 +718,7 @@ public final class ExReflection {
         if (annotationClasses.length == 1) {
             return method.isAnnotationPresent(annotationClasses[0]);
         }
-        return ExCollection.hasAnyOf(ExList.listOf(annotationClasses), ExList.listOf(method.getAnnotations()));
+        return MoreCollection.hasAnyOf(MoreList.listOf(annotationClasses), MoreList.listOf(method.getAnnotations()));
     }
 
     /**
@@ -737,14 +737,14 @@ public final class ExReflection {
         @Nullable final Method method,
         @Nullable final Collection<Class<? extends Annotation>> annotationClasses
     ) {
-        if (method == null || ExCollection.isEmpty(annotationClasses)) {
+        if (method == null || MoreCollection.isEmpty(annotationClasses)) {
             return false;
         }
         final List<Class<? extends Annotation>> classes = Arrays
             .stream(method.getAnnotations())
             .map(Annotation::annotationType)
             .collect(Collectors.toList());
-        return ExCollection.hasAnyOf(annotationClasses, classes);
+        return MoreCollection.hasAnyOf(annotationClasses, classes);
     }
 
     /**
@@ -771,7 +771,7 @@ public final class ExReflection {
             assert annotationClasses[0] != null;
             return clazz.isAnnotationPresent(annotationClasses[0]);
         }
-        return ExCollection.hasAnyOf(ExList.listOf(annotationClasses), ExList.listOf(clazz.getAnnotations()));
+        return MoreCollection.hasAnyOf(MoreList.listOf(annotationClasses), MoreList.listOf(clazz.getAnnotations()));
     }
 
     /**
@@ -790,14 +790,14 @@ public final class ExReflection {
         @Nullable final Class<?> clazz,
         @Nullable final Collection<Class<? extends Annotation>> annotationClasses
     ) {
-        if (clazz == null || ExCollection.isEmpty(annotationClasses)) {
+        if (clazz == null || MoreCollection.isEmpty(annotationClasses)) {
             return false;
         }
         final List<Class<? extends Annotation>> classes = Arrays
             .stream(clazz.getAnnotations())
             .map(Annotation::annotationType)
             .collect(Collectors.toList());
-        return ExCollection.hasAnyOf(annotationClasses, classes);
+        return MoreCollection.hasAnyOf(annotationClasses, classes);
     }
 
     /**
