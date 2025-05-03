@@ -130,6 +130,42 @@ public final class MoreString {
         return isNotBlank(input) && input.chars().noneMatch((character) -> predicate.test((char) character));
     }
 
+    public static boolean hasDigitOnly(@Nullable String value) {
+        return isNotBlank(value) && value.chars().allMatch(Character::isDigit);
+    }
+
+    public static boolean hasDigitAndSpaceOnly(@Nullable String value) {
+        return isNotBlank(value) && value.chars().allMatch((character) -> Character.isDigit(character) || Character.isSpaceChar(character));
+    }
+
+    public static boolean hasLetterOnly(@Nullable String value) {
+        return isNotBlank(value) && value.chars().allMatch(Character::isLetter);
+    }
+
+    public static boolean hasLetterAndSpaceOnly(@Nullable String value) {
+        return isNotBlank(value) && value.chars().allMatch((character) -> Character.isLetter(character) || Character.isSpaceChar(character));
+    }
+
+    public static boolean hasLetterAndDigitOnly(@Nullable String value) {
+        return isNotBlank(value) && value.chars().allMatch((character) -> Character.isLetter(character) || Character.isDigit(character));
+    }
+
+    public static boolean hasLetterAndDigitAndSpaceOnly(@Nullable String value) {
+        return isNotBlank(value) && value.chars().allMatch(MoreString::isLetterOrDigitOrSpace);
+    }
+
+    public static boolean hasUniqueCharacterOnly(@Nullable String value) {
+        return isNotBlank(value) && value.chars().noneMatch(MoreString::isLetterOrDigitOrSpace);
+    }
+
+    public static boolean hasUniqueCharacterAndSpaceOnly(@Nullable String value) {
+        return isNotBlank(value) && value.chars().noneMatch((character) -> Character.isLetter(character) || Character.isDigit(character));
+    }
+
+    private static boolean isLetterOrDigitOrSpace(int character) {
+        return Character.isLetter(character) || Character.isDigit(character) || Character.isSpaceChar(character);
+    }
+
     /**
      * Get a substring before the first occurrence of a specific word.
      * <pre>Example:
