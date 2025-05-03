@@ -138,22 +138,96 @@ public final class ExList {
         }
         return listOf(collection);
     }
-
+    
+    /**
+     * Find index of the first element that meet the specific condition.
+     * @param condition condition to find the element.
+     * @param collection list that you want to find element from.
+     * @return -1 if no item met the condition. Otherwise, return index of first element that meet the condition.
+     */
+    public static <T> int firstIndexMatch(final Predicate<T> condition, final List<T> collection) {
+        if (collection == null || collection.isEmpty()) {
+            return -1;
+        }
+        
+        for (int index = 0; index < collection.size(); index++) {
+            if (condition.test(collection.get(index))) {
+                return index;
+            }
+        }
+        
+        return -1;
+    }
+    
+    /**
+     * Find index of the last element that meet the specific condition.
+     * @param condition condition to find the element.
+     * @param collection list that you want to find element from.
+     * @return -1 if no item met the condition. Otherwise, return index of last element that meet the condition.
+     */
+    public static <T> int lastIndexMatch(final Predicate<T> condition, final List<T> collection) {
+        if (collection == null || collection.isEmpty()) {
+            return -1;
+        }
+        
+        for (int index = collection.size() - 1; index >= 0; index--) {
+            if (condition.test(collection.get(index))) {
+                return index;
+            }
+        }
+        
+        return -1;
+    }
 
     /**
      * Get element at a certain index.
      * @param index index of the element that you want to get.
+     * If the index is less than 0. Then return the element at the end of the list.
+     * <pre> Example:
+     * - List: [1, 5, 8, 12]
+     * - index: 0 => return 1
+     * - index: 2 => return 8
+     * - index: 5 => return null
+     * - index: -1 => return 12
+     * - index: -3 => return 1
+     * - index: -4 => return null
+     * </pre>
      * @param list list that contains the element.
      * @return empty if list is empty or no element at input index. Otherwise, return element.
      */
-    public static <T> Optional<T> elementAt(int index, List<T> list) {
+    public static <T> Optional<T> findElementAt(int index, List<T> list) {
+        return Optional.ofNullable(elementAt(index, list));
+    }
+
+    /**
+     * Get element at a certain index.
+     * @param index index of the element that you want to get.
+     * If the index is less than 0. Then return the element at the end of the list.
+     * <pre> Example:
+     * - List: [1, 5, 8, 12]
+     * - index: 0 => return 1
+     * - index: 2 => return 8
+     * - index: 5 => return null
+     * - index: -1 => return 12
+     * - index: -3 => return 1
+     * - index: -4 => return null
+     * </pre>
+     * @param list list that contains the element.
+     * @return null if list is empty or no element at input index. Otherwise, return element.
+     */
+    public static <T> T elementAt(int index, List<T> list) {
         if (isEmpty(list)) {
-            return Optional.empty();
+            return null;
         }
+        
+        if (index < 0) {
+            index = list.size() + index;
+        }
+        
         try {
-            return Optional.of(list.get(index));
+            return list.get(index);
         } catch (IndexOutOfBoundsException e) {
-            return Optional.empty();
+            return null;
         }
     }
 
@@ -163,7 +237,16 @@ public final class ExList {
      * @return empty if list is empty. Otherwise, return optional of first element.
      */
     @NotNull
-    public static <T> Optional<T> firstOf(@Nullable final List<T> list) {
+    public static <T> Optional<T> findFirstOf(@Nullable final List<T> list) {
+        return findElementAt(0, list);
+    }
+    
+    /**
+     * Get first element of a list.
+     * @param list can be null.
+     * @return null if list is empty. Otherwise, return optional of first element.
+     */
+    public static <T> T firstOf(@Nullable final List<T> list) {
         return elementAt(0, list);
     }
     
@@ -173,11 +256,20 @@ public final class ExList {
      * @return empty if list is empty. Otherwise, return optional of last element.
      */
     @NotNull
-    public static <T> Optional<T> lastOf(@Nullable final List<T> list) {
+    public static <T> Optional<T> findLastOf(@Nullable final List<T> list) {
         if (isEmpty(list)) {
             return Optional.empty();
         }
-        return elementAt(list.size() - 1, list);
+        return findElementAt(list.size() - 1, list);
+    }
+    
+    /**
+     * Get last element of a list.
+     * @param list can be null.
+     * @return null if list is empty. Otherwise, return optional of last element.
+     */
+    public static <T> T lastOf(@Nullable final List<T> list) {
+        return elementAt(- 1, list);
     }
 
     /**
