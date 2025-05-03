@@ -23,7 +23,7 @@ public class ExStream {
      * @param iterator Iterator that you want, can be null.
      * @return Empty stream if iterator is null. Otherwise, return stream of iterator.
      */
-    public static <T> Stream<T> from(final @Nullable Iterator<T> iterator) {
+    public static <T> Stream<T> streamOf(final @Nullable Iterator<T> iterator) {
         if (iterator == null) {
             return Stream.empty();
         }
@@ -36,11 +36,24 @@ public class ExStream {
      * @param collection Collection that you want, can be null.
      * @return Empty stream if collection is null. Otherwise, return stream of collection.
      */
-    public static <T> Stream<T> from(final @Nullable Collection<T> collection) {
+    public static <T> Stream<T> streamOf(final @Nullable Collection<T> collection) {
         if (collection == null) {
             return Stream.empty();
         }
         return collection.stream();
+    }
+
+    /**
+     * Extract stream from collection.
+     *
+     * @param array array that you want, can be null.
+     * @return Empty stream if collection is null. Otherwise, return stream of collection.
+     */
+    public static <T> Stream<T> streamOf(final @Nullable T[] array) {
+        if (array == null) {
+            return Stream.empty();
+        }
+        return Arrays.stream(array);
     }
 
     /**
@@ -84,7 +97,7 @@ public class ExStream {
      * lambda function with 2 parameters.
      */
     public static <T, R> CoupleStream<T, R> zip(final @Nullable Collection<T> keyCollection, @NotNull final Function<T, R> valueProvider) {
-        final List<R> valueCollection = ExStream.from(keyCollection).map(valueProvider).collect(Collectors.toList());
+        final List<R> valueCollection = ExStream.streamOf(keyCollection).map(valueProvider).collect(Collectors.toList());
         return zip(keyCollection, valueCollection);
     }
 
@@ -154,7 +167,7 @@ public class ExStream {
         @NotNull final Function<X, Collection<Y>> valueCollectionProvider,
         @NotNull final BiFunction<? super X, ? super Y, ? extends R> zipper
     ) {
-        final Iterator<X> keyIterator = ExStream.from(keyCollection).iterator();
+        final Iterator<X> keyIterator = ExStream.streamOf(keyCollection).iterator();
 
         final SupportTypes.FlatZipIterator<X, Y> helperIterator = new SupportTypes.FlatZipIterator<>(keyIterator, valueCollectionProvider);
         final Iterator<R> zipIterator = new Iterator<>() {
@@ -181,8 +194,8 @@ public class ExStream {
         @Nullable final Collection<? extends R> right,
         @NotNull final BiFunction<? super L, ? super R, ? extends T> zipper
     ) {
-        final Spliterator<? extends L> leftSpliterator = ExStream.from(left).spliterator();
-        final Spliterator<? extends R> rightSpliterator = ExStream.from(right).spliterator();
+        final Spliterator<? extends L> leftSpliterator = ExStream.streamOf(left).spliterator();
+        final Spliterator<? extends R> rightSpliterator = ExStream.streamOf(right).spliterator();
 
         final Iterator<L> leftIterator = Spliterators.iterator(leftSpliterator);
         final Iterator<R> rightIterator = Spliterators.iterator(rightSpliterator);

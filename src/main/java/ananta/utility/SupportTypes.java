@@ -27,7 +27,7 @@ class SupportTypes {
 
         private void goNextOneInLeftIterator() {
             this.currentLeft = this.leftIterator.next();
-            this.rightIterator = ExStream.from(this.iteratorProvider.apply(this.currentLeft)).iterator();
+            this.rightIterator = this.iteratorProvider.apply(this.currentLeft).iterator();
         }
 
         boolean hasNext() {
