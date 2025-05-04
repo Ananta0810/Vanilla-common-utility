@@ -17,6 +17,46 @@ public class MoreStream {
 
     private MoreStream() {}
 
+
+    /**
+     * Extract stream from collection.
+     *
+     * @param collection Collection that you want, can be null.
+     * @return Empty stream if collection is null. Otherwise, return stream of collection.
+     */
+    public static <T> Stream<T> streamOf(final @Nullable Collection<T> collection) {
+        if (collection == null) {
+            return Stream.empty();
+        }
+        return collection.stream();
+    }
+
+    /**
+     * Extract stream from array.
+     *
+     * @param array array that you want, can be null.
+     * @return Empty stream if array is null. Otherwise, return stream of array.
+     */
+    public static <T> Stream<T> streamOf(final @Nullable T[] array) {
+        if (array == null) {
+            return Stream.empty();
+        }
+        return Arrays.stream(array);
+    }
+
+    /**
+     * Extract stream from iterable.
+     *
+     * @param iterable Interable that you want, can be null.
+     * @return Empty stream if iterable is null. Otherwise, return stream of iterable.
+     */
+    public static <T> Stream<T> streamOf(final @Nullable Iterable<T> iterable) {
+        if (iterable == null) {
+            return Stream.empty();
+        }
+        return StreamSupport.stream(iterable.spliterator(), false);
+    }
+
     /**
      * Extract stream from iterator.
      *
@@ -33,27 +73,14 @@ public class MoreStream {
     /**
      * Extract stream from collection.
      *
-     * @param collection Collection that you want, can be null.
-     * @return Empty stream if collection is null. Otherwise, return stream of collection.
+     * @param enumeration enumeration that you want, can be null.
+     * @return Empty stream if enumeration is null. Otherwise, return stream of enumeration.
      */
-    public static <T> Stream<T> streamOf(final @Nullable Collection<T> collection) {
-        if (collection == null) {
+    public static <T> Stream<T> streamOf(final @Nullable Enumeration<T> enumeration) {
+        if (enumeration == null) {
             return Stream.empty();
         }
-        return collection.stream();
-    }
-
-    /**
-     * Extract stream from collection.
-     *
-     * @param array array that you want, can be null.
-     * @return Empty stream if collection is null. Otherwise, return stream of collection.
-     */
-    public static <T> Stream<T> streamOf(final @Nullable T[] array) {
-        if (array == null) {
-            return Stream.empty();
-        }
-        return Arrays.stream(array);
+        return streamOf(enumeration.asIterator());
     }
 
     /**
