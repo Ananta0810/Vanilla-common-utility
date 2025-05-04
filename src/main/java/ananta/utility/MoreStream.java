@@ -84,6 +84,51 @@ public class MoreStream {
     }
 
     /**
+     * Concat multiple streams into one.
+     *
+     * @param streams The streams that you want to concat. Stream inside can be null.
+     * @return Empty stream if no stream available. Otherwise, return the concat version of them all.
+     */
+    @SafeVarargs
+    public static <T> Stream<T> concat(final @Nullable Stream<T>... streams) {
+        if (streams == null || streams.length == 0) {
+            return Stream.empty();
+        }
+
+        return Stream.of(streams).flatMap(stream -> stream != null ? stream : Stream.empty());
+    }
+
+    /**
+     * Concat multiple streams of collections into one.
+     *
+     * @param streams The streams of collection that you want to concat. Stream inside can be null.
+     * @return Empty stream if no stream available. Otherwise, return the concat version of them all.
+     */
+    @SafeVarargs
+    public static <T> Stream<T> concatCollections(final @Nullable Stream<? extends Collection<T>>... streams) {
+        if (streams == null || streams.length == 0) {
+            return Stream.empty();
+        }
+
+        return Stream.of(streams).flatMap(stream -> stream != null ? stream.flatMap(Collection::stream) : Stream.empty());
+    }
+
+    /**
+     * Concat multiple streams of arrays into one.
+     *
+     * @param streams The streams of arrays that you want to concat. Stream inside can be null.
+     * @return Empty stream if no stream available. Otherwise, return the concat version of them all.
+     */
+    @SafeVarargs
+    public static <T> Stream<T> concatArrays(final @Nullable Stream<T[]>... streams) {
+        if (streams == null || streams.length == 0) {
+            return Stream.empty();
+        }
+
+        return Stream.of(streams).flatMap(array -> array != null ? array.flatMap(Arrays::stream) : Stream.empty());
+    }
+
+    /**
      * <pre>
      * Result example:
      *      - Collection 1: [1, 2, 3]
@@ -240,10 +285,7 @@ public class MoreStream {
         };
 
         // Zipping looses DISTINCT and SORTED characteristics
-        final int characteristics =
-            leftSpliterator.characteristics() &
-                rightSpliterator.characteristics() &
-                ~(Spliterator.DISTINCT | Spliterator.SORTED);
+        final int characteristics = leftSpliterator.characteristics() & rightSpliterator.characteristics() & ~(Spliterator.DISTINCT | Spliterator.SORTED);
 
         final long zipSize = ((characteristics & Spliterator.SIZED) != 0)
             ? Math.min(leftSpliterator.getExactSizeIfKnown(), rightSpliterator.getExactSizeIfKnown())
